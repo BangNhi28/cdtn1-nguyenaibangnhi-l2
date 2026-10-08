@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="TY7CMxw7sUnQLVbYCYAs">
+    <mxGraphModel dx="2090" dy="859" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="04MgLKAEFW4uQep8UYph-169" edge="1" parent="1" source="04MgLKAEFW4uQep8UYph-161" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="04MgLKAEFW4uQep8UYph-163">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-161" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Lớp trình bày (Presentation)" vertex="1">
+          <mxGeometry height="170" width="352" x="-438" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-162" parent="04MgLKAEFW4uQep8UYph-161" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;ul&gt;&lt;li&gt;Màn hình giao diện người dùng: tạo yêu cầu mới, danh sách, chi tiết&lt;/li&gt;&lt;li&gt;Controller: TicketController, CustomerController&lt;/li&gt;&lt;li&gt;Nhận input, validation hình thức, trả HTTP/JSON&lt;/li&gt;&lt;/ul&gt;" vertex="1">
+          <mxGeometry height="130" width="321" x="15.5" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-163" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="LỚP NGHIỆP VỤ (Business / Service)" vertex="1">
+          <mxGeometry height="170" width="352" x="-438" y="317" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-164" parent="04MgLKAEFW4uQep8UYph-163" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;ul&gt;&lt;li&gt;&lt;p&gt;TicketService: tạo phiếu, kiểm tra quy tắc, tính SLA&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ClassifyService: phân loại nhóm sự cố&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;PriorityService: xác định ưu tiên và due_date&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;Toàn bộ quy tắc nghiệp vụ nằm ở lớp này&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;" vertex="1">
+          <mxGeometry height="130" width="327" x="8" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-165" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="LỚP TRUY CẬP DỮ LIỆU (Repository / DAO)" vertex="1">
+          <mxGeometry height="170" width="352" x="-438" y="563" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-166" parent="04MgLKAEFW4uQep8UYph-165" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;ul&gt;&lt;li&gt;&lt;p&gt;CustomerRepository · DeviceRepository · TicketRepository · IssueCategoryRepository&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;Đọc/ghi dữ liệu qua interface; KHÔNG chứa quy tắc nghiệp vụ&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;" vertex="1">
+          <mxGeometry height="130" width="321" x="11" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-167" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="LỚP LƯU TRỮ (Data Store)" vertex="1">
+          <mxGeometry height="170" width="352" x="-438" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-168" parent="04MgLKAEFW4uQep8UYph-167" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;ul&gt;&lt;li&gt;&lt;p&gt;CustomerRepository · DeviceRepository · TicketRepository · IssueCategoryRepository&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;Đọc/ghi dữ liệu qua interface; KHÔNG chứa quy tắc nghiệp vụ&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;" vertex="1">
+          <mxGeometry height="130" width="298" x="22.5" y="33" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-170" edge="1" parent="1" source="04MgLKAEFW4uQep8UYph-163" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="04MgLKAEFW4uQep8UYph-165">
+          <mxGeometry relative="1" x="-0.0352" as="geometry">
+            <mxPoint x="-262.5" y="515" as="sourcePoint" />
+            <mxPoint x="-262.5" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-171" edge="1" parent="1" source="04MgLKAEFW4uQep8UYph-165" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="04MgLKAEFW4uQep8UYph-167">
+          <mxGeometry relative="1" x="-0.0352" as="geometry">
+            <mxPoint x="-256" y="708" as="sourcePoint" />
+            <mxPoint x="-256" y="803" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-172" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="HTTP + JSON" vertex="1">
+          <mxGeometry height="30" width="98" x="-257" y="269" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-174" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SQL" vertex="1">
+          <mxGeometry height="30" width="60" x="-257" y="752" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-175" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Gọi Repository interface&amp;nbsp;" vertex="1">
+          <mxGeometry height="30" width="137" x="-257" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-176" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Hệ thống Smart CRM - Mekong Mobile | Sơ đồ kiến trúc phân lớp L2&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="592" x="-542" y="7" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-179" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&amp;nbsp;Mũi tên chỉ hướng phụ thuộc một chiều; lớp dưới không gọi ngược lớp trên." vertex="1">
+          <mxGeometry height="135" width="284.25" x="-737.87" y="1041" as="geometry" />
+        </mxCell>
+        <mxCell id="04MgLKAEFW4uQep8UYph-180" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Chú thích&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="-625.75" y="1057" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
