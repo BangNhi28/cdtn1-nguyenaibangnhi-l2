@@ -34,10 +34,28 @@ Môi trường và công cụ sử dụng:
 - **Trình duyệt web**: dùng để truy cập GitHub và diagrams.net.
 
 
-# 3. Hướng dẫn chạy
+## 3. Hướng dẫn chạy
 
-# 4. Cấu trúc thư mục
+## 4. Cấu trúc thư mục
 
-# 5. Kiểm thử
+## 5. Kiểm thử
 
 ## 6. Trạng thái hiện tại
+Dự án hiện đang ở giai đoạn **phân tích và thiết kế (BT1)**.
+
+### Đã hoàn thành
+- [x] Phân tích bối cảnh, phạm vi và yêu cầu hệ thống.
+- [x] Xây dựng SRS và các Functional Requirements / Non-Functional Requirements.
+- [x] Xây dựng User Stories và tiêu chí chấp nhận.
+- [x] Xây dựng Use Case Diagram và mô tả Use Case chính.
+- [x] Thiết kế kiến trúc phân lớp.
+- [x] Thiết kế mô hình dữ liệu và ERD.
+- [x] Thiết kế wireframe cho các màn hình chính.
+- [x] Chuẩn bị cấu trúc repository và các tài liệu thiết kế.
+- [x] Chuẩn bị bản BT1 để xuất/nộp dưới dạng PDF.
+
+### Đang hoàn thiện
+- [ ] Rà soát tính nhất quán giữa SRS, Use Case, Architecture, ERD và Wireframe.
+- [ ] Kiểm tra lại các quan hệ và cardinality trong ERD.
+- [ ] Hoàn thiện `schema.sql` theo mô hình dữ liệu cuối cùng.
+- [ ] Kiểm tra lần cuối các hình ảnh export trước khi nộp.
