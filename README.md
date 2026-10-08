@@ -58,4 +58,4 @@ Dự án hiện đang ở giai đoạn **phân tích và thiết kế (BT1)**.
 - [ ] Rà soát tính nhất quán giữa SRS, Use Case, Architecture, ERD và Wireframe.
 - [ ] Kiểm tra lại các quan hệ và cardinality trong ERD.
 - [ ] Hoàn thiện `schema.sql` theo mô hình dữ liệu cuối cùng.
-- [ ] Kiểm tra lần cuối các hình ảnh export trước khi nộp.
+- [ ] Kiểm tra lần cuối các hình ảnh export trước khi nộp. 
