@@ -9,4 +9,6 @@ Tài liệu này ghi nhận các công cụ AI được sử dụng để hỗ t
 | ChatGPT (OpenAI) | Hỗ trợ soạn và rà soát SRS, bảng truy vết, mô hình kiến trúc, ERD, API Contract và wireframe; gợi ý cách trình bày tài liệu Markdown. | Mục 1–6 SRS; tập trung Mục 3 (kiến trúc), Mục 4 (mô hình dữ liệu), Mục 5 (wireframe) và tài liệu repository. | Tự kiểm tra nội dung được gợi ý, đối chiếu yêu cầu đề bài và các phần trong tài liệu; tự quyết định, chỉnh sửa và chịu trách nhiệm về nội dung cuối cùng. |
 | Figma AI | Hỗ trợ gợi ý bố cục giao diện và tham khảo thiết kế wireframe. | Mục 5 — Wireframe giao diện. | Tự xem lại và điều chỉnh bố cục, trường dữ liệu để phù hợp với yêu cầu đề bài. |
 | Stitch | Hỗ trợ tạo mẫu giao diện và gợi ý cách sắp xếp các thành phần trên màn hình tiếp nhận, tạo mới và xem chi tiết phiếu bảo hành. | Mục 5 — Wireframe giao diện. | Tự rà soát mẫu giao diện, đối chiếu yêu cầu nghiệp vụ và chỉnh sửa trước khi đưa vào báo cáo. |
+| Cursor Agents | Hỗ trợ đối chiếu đề bài, case study và phản hồi giảng viên; chỉnh sửa SRS, schema.sql và bảng truy vết để thống nhất với ERD MySQL. | Mục 1, Mục 4, phụ lục; `docs/srs.md`, `docs/schema.sql`, `docs/thay-doi-thiet-ke.md`. | Tự đọc lại bản Word, đối chiếu nội dung với ERD và `docs/schema.sql`; tự quyết định nội dung giữ lại, chỉnh sửa và chịu trách nhiệm về kết quả cuối cùng. |
+
 
