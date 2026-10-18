@@ -1,4 +1,3 @@
-
 # BÁO CÁO BÀI TẬP 1
 ## MÔN: CHUYÊN NGÀNH TỐT NGHIỆP 1
 
@@ -10,7 +9,7 @@
 
 - **Track:** Công nghệ phần mềm (SE)
 - **Lớp:** 261_71ITGR40203_06
-- **Link GitHub repo:** [Dán link repository tại đây]
+- **Link GitHub repo:** https://github.com/BangNhi28/cdtn1-nguyenaibangnhi-l2.git
 - **Sinh viên thực hiện:** Nguyễn Ái Băng Nhi – 2374802010368
 - **Giảng viên hướng dẫn:** TS. Nguyễn Trí Hải
 
@@ -21,8 +20,7 @@
 | Phiên bản | Ngày | Nội dung thay đổi | Người thực hiện |
 |---|---|---|---|
 | 1.0 | 08/10/2026 | Cập nhật tài liệu SRS; xác định phạm vi hệ thống, yêu cầu nghiệp vụ, yêu cầu chức năng và phi chức năng; xây dựng bảng truy vết, mô hình kiến trúc, ERD và wireframe giao diện. | Nguyễn Ái Băng Nhi |
-| 1.1 | 18/10/2026 | Bỏ schema MongoDB. Mục 4 đổi sang SQL DDL MySQL 8 (Aiven); lịch sử trạng thái nằm ở bảng `ticket_status_log`. ERD vẽ lại cho khớp DDL. Wireframe và API dùng đúng tên cột. | Nguyễn Ái Băng Nhi |
-| 1.2 | 18/10/2026 | Chỉnh DDL theo ERD mới: bỏ `customer.email` và `ticket.warranty_verified`; thêm `device.note`. Lịch sử trạng thái giữ ở bảng `ticket_status_log`. | Nguyễn Ái Băng Nhi |
+| 1.1 | 18/10/2026 | Bỏ schema MongoDB, viết SQL DDL MySQL 8 cho 5 bảng quan hệ, lịch sử trạng thái nằm ở `ticket_status_log`. Thống nhất thuật ngữ phiếu bảo hành và cột `due_date`. Đổi R1–R5 thành QT-01, QT-02, QT-03, QT-04, QT-05, QT-06, QT-13, QT-15. Giảm User Story từ 8 xuống 7. Ghi phần ngoài phạm vi trên sơ đồ kiến trúc. | Nguyễn Ái Băng Nhi |
 
 ---
 
@@ -32,7 +30,7 @@
 
 ### Bối cảnh
 
-Mekong Mobile là chuỗi 24 cửa hàng và 6 trung tâm bảo hành tại TP.HCM, Cần Thơ và Hà Nội, với khoảng 260 yêu cầu bảo hành mỗi tháng. Hiện tại, yêu cầu bảo hành được ghi tay nên khó theo dõi yêu cầu đang ở bước nào, ai đang xử lý và đã quá hạn cam kết hay chưa.
+Mekong Mobile là chuỗi 24 cửa hàng và 6 trung tâm bảo hành tại TP.HCM, Cần Thơ và Hà Nội, với khoảng 260 yêu cầu bảo hành mỗi tháng. Hiện yêu cầu bảo hành được ghi tay nên không ai biết yêu cầu đang ở bước nào, ai đang xử lý và đã quá hạn cam kết hay chưa.
 
 ### Luồng nghiệp vụ được chọn
 
@@ -51,34 +49,36 @@ Nhân viên tiếp nhận ghi nhận, phân loại và xác định mức ưu ti
 
 ### Bảng thuật ngữ
 
-| Thuật ngữ | Giải nghĩa |
-|---|---|
-| Yêu cầu bảo hành | Một phiếu ghi nhận lỗi/sự cố của khách hàng cần xử lý, có mã, trạng thái và hạn cam kết. |
-| Trạng thái | Mới tiếp nhận → Đã phân loại → Đã xác định ưu tiên. |
-| Hạn cam kết (SLA) | Thời điểm trễ nhất phải hoàn tất yêu cầu, tính từ lúc tiếp nhận, phụ thuộc mức ưu tiên. |
-| Nhóm sự cố | Phân loại loại lỗi: Phần cứng / Phần mềm / Khác. |
+| Thuật ngữ | Giải nghĩa | Tên kỹ thuật |
+|---|---|---|
+| Khách hàng | Người đã mua hàng hoặc dùng dịch vụ của Mekong Mobile. | `customer` |
+| Thiết bị | Máy cụ thể của khách, định danh bằng số serial/IMEI. | `device` |
+| Phiếu bảo hành | Một phiếu ghi nhận lỗi/sự cố của khách hàng cần xử lý, có mã, trạng thái và hạn cam kết. | `ticket` |
+| Trạng thái | Mới tiếp nhận → Đã phân loại → Đã xác định ưu tiên. | `status` |
+| Lịch sử trạng thái | Mỗi lần chuyển trạng thái được ghi kèm thời điểm và người thực hiện. | `ticket_status_log` |
+| Hạn cam kết (SLA) | Thời điểm trễ nhất phải hoàn tất phiếu, tính từ lúc tiếp nhận, phụ thuộc mức ưu tiên. | `due_date` |
+| Nhóm sự cố | Phân loại loại lỗi: Phần cứng / Phần mềm / Khác. | `issue_category` |
+| Mức ưu tiên | Mức khẩn của phiếu: Cao / Trung bình / Thấp; quyết định hạn cam kết. | `priority` |
+| Tình trạng bảo hành | Còn bảo hành / Hết bảo hành / Chưa xác minh, xác định lúc tiếp nhận. | `is_warranty`, `purchase_date` |
 
 ## 1.2. Các bên liên quan và vai trò người dùng
 
 | Vai trò | Được làm | Không được làm |
 |---|---|---|
 | Nhân viên tiếp nhận | Ghi nhận yêu cầu mới, phân loại và xác định ưu tiên, tra cứu yêu cầu. | Gán kỹ thuật viên, cập nhật trạng thái xử lý kỹ thuật. |
-| Quản lý trung tâm | Xem danh sách yêu cầu bảo hành, xem danh sách quá hạn, xem lịch sử thay đổi trạng thái. | Trực tiếp chỉnh sửa nội dung kỹ thuật của yêu cầu. |
+| Quản lý trung tâm | Xem danh sách phiếu bảo hành, xem danh sách quá hạn, xem lịch sử thay đổi trạng thái. | Trực tiếp chỉnh sửa nội dung kỹ thuật của yêu cầu. |
 
 ## 1.3. Yêu cầu chức năng (FR) và User Story
 
-### Danh sách yêu cầu chức năng
-
 | Mã | Yêu cầu chức năng | User Story | MoSCoW |
 |---|---|---|---|
-| FR1 | Tra cứu khách hàng theo số điện thoại | US1 | SHOULD |
-| FR2 | Ghi nhận yêu cầu bảo hành mới (khách hàng, sản phẩm, mô tả lỗi) | US2 | MUST |
+| FR1 | Tra cứu khách hàng theo số điện thoại; nếu tìm thấy thì tự điền họ tên, địa chỉ và danh sách thiết bị của khách | US1 | SHOULD |
+| FR2 | Ghi nhận phiếu bảo hành mới (khách hàng, sản phẩm, mô tả lỗi) | US2 | MUST |
 | FR3 | Phân loại yêu cầu theo nhóm sự cố | US3 | MUST |
 | FR4 | Xác định mức độ ưu tiên của yêu cầu | US4 | MUST |
 | FR5 | Xem hạn cam kết của yêu cầu bảo hành | US5 | SHOULD |
-| FR6 | Xem danh sách yêu cầu bảo hành và trạng thái xử lý | US6 | SHOULD |
-| FR7 | Xem danh sách yêu cầu sắp/đã quá hạn cam kết | US7 | COULD |
-| FR8 | Xem lịch sử thay đổi trạng thái của yêu cầu | US8 | COULD |
+| FR6 | Xem danh sách phiếu bảo hành và trạng thái xử lý, gồm bộ lọc sắp hoặc đã quá hạn | US6 | SHOULD |
+| FR7 | Xem lịch sử thay đổi trạng thái của phiếu bảo hành | US7 | COULD |
 
 ### US1 [SHOULD]
 
@@ -86,56 +86,57 @@ Là nhân viên tiếp nhận, tôi muốn tra cứu khách hàng theo số đi�
 
 ### US2 [MUST]
 
-Là nhân viên tiếp nhận, tôi muốn ghi nhận yêu cầu bảo hành mới (khách hàng, sản phẩm, mô tả lỗi) để bắt đầu quy trình xử lý.
+Là nhân viên tiếp nhận, tôi muốn ghi nhận phiếu bảo hành mới (khách hàng, sản phẩm, mô tả lỗi) để bắt đầu quy trình xử lý.
 
-- **AC1:** Given đã đăng nhập, When nhập đủ thông tin và nhấn Lưu, Then hệ thống tạo yêu cầu mới, trạng thái "Mới tiếp nhận".
-- **AC2 (ngoại lệ):** Given bỏ trống trường bắt buộc, When nhấn Lưu, Then hệ thống báo lỗi, không tạo yêu cầu.
+- **AC1:** Given đã đăng nhập, When nhập đủ thông tin và nhấn Lưu, Then hệ thống tạo phiếu mới, trạng thái "Mới tiếp nhận".
+- **AC2 (ngoại lệ):** Given bỏ trống trường bắt buộc, When nhấn Lưu, Then hệ thống báo lỗi, không tạo phiếu.
 
 ### US3 [MUST]
 
 Là nhân viên tiếp nhận, tôi muốn phân loại yêu cầu theo nhóm sự cố để xác định loại vấn đề cần xử lý.
 
-- **AC1:** Given yêu cầu ở trạng thái "Mới tiếp nhận", When chọn nhóm sự cố, Then trạng thái chuyển "Đã phân loại".
-- **AC2 (ngoại lệ):** Given yêu cầu chưa được ghi nhận, When cố phân loại, Then hệ thống từ chối thao tác.
+- **AC1:** Given phiếu ở trạng thái "Mới tiếp nhận", When chọn nhóm sự cố, Then trạng thái chuyển "Đã phân loại".
+- **AC2 (ngoại lệ):** Given phiếu chưa được ghi nhận, When cố phân loại, Then hệ thống từ chối thao tác.
 
 ### US4 [MUST]
 
 Là nhân viên tiếp nhận, tôi muốn xác định mức độ ưu tiên của yêu cầu để đảm bảo xử lý theo mức độ cần thiết.
 
-- **AC1:** Given yêu cầu đã phân loại, When chọn mức ưu tiên (Thấp/Trung bình/Cao), Then hệ thống lưu và tính hạn cam kết tương ứng.
+- **AC1:** Given phiếu đã phân loại, When chọn mức ưu tiên (Thấp/Trung bình/Cao), Then hệ thống lưu và tính hạn cam kết tương ứng.
 - **AC2 (ngoại lệ):** Given mức ưu tiên để trống hoặc không hợp lệ, When lưu, Then hệ thống báo lỗi yêu cầu chọn lại.
 
 ### US5 [SHOULD]
 
-Là nhân viên tiếp nhận, tôi muốn xem hạn cam kết của yêu cầu bảo hành sau khi tiếp nhận để biết thời hạn xử lý và cung cấp thông tin cho khách hàng.
+Là nhân viên tiếp nhận, tôi muốn xem hạn cam kết của phiếu bảo hành sau khi xác định ưu tiên để biết thời hạn xử lý và cung cấp thông tin cho khách hàng.
 
 ### US6 [SHOULD]
 
-Là quản lý trung tâm, tôi muốn xem danh sách các yêu cầu bảo hành và trạng thái xử lý để theo dõi tình hình xử lý tại trung tâm.
+Là quản lý trung tâm, tôi muốn xem danh sách các phiếu bảo hành và trạng thái xử lý, gồm các phiếu sắp hoặc đã quá hạn, để theo dõi tình hình xử lý tại trung tâm.
 
 ### US7 [COULD]
 
-Là quản lý trung tâm, tôi muốn xem danh sách các yêu cầu sắp hoặc đã quá hạn cam kết để can thiệp kịp thời.
-
-### US8 [COULD]
-
-Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái của yêu cầu bảo hành để theo dõi quá trình xử lý và kiểm tra tiến độ.
+Là quản lý trung tâm, tôi muốn xem chi tiết lịch sử thay đổi trạng thái của phiếu bảo hành để theo dõi quá trình xử lý và kiểm tra tiến độ của từng yêu cầu.
 
 ## 1.4. Yêu cầu phi chức năng (NFR)
 
 | Mã | Mô tả | Ngưỡng |
 |---|---|---|
-| NFR1 | Thời gian phản hồi API tra cứu/tạo yêu cầu | ≤ 3 giây |
-| NFR2 | Thời gian lưu trữ dữ liệu yêu cầu | Tối thiểu 2 năm |
+| NFR1 | Thời gian phản hồi API tra cứu/tạo phiếu | ≤ 3 giây |
+| NFR2 | Thời gian lưu trữ dữ liệu phiếu | Tối thiểu 2 năm |
 | NFR3 | Tỉ lệ sẵn sàng hệ thống | ≥ 98% |
 
 ## 1.5. Ràng buộc và quy tắc nghiệp vụ
 
-- **R1:** Yêu cầu bảo hành sau khi được tạo phải được phân loại theo nhóm sự cố trước khi xác định mức ưu tiên.
-- **R2:** Chỉ yêu cầu đã được phân loại mới được xác định mức ưu tiên (Thấp / Trung bình / Cao) và tính hạn cam kết tương ứng.
-- **R3:** Hạn cam kết (SLA) được tính dựa trên mức ưu tiên: Cao: 24 giờ, Trung bình: 48 giờ, Thấp: 72 giờ, tính từ thời điểm tiếp nhận yêu cầu.
-- **R4:** Yêu cầu ở trạng thái “Đã xác định ưu tiên” hoặc các trạng thái sau đó không được quay ngược về trạng thái trước nếu không có thao tác hợp lệ theo quy trình nghiệp vụ.
-- **R5:** Mỗi lần thay đổi trạng thái của yêu cầu phải được ghi nhận vào lịch sử, bao gồm trạng thái cũ, trạng thái mới, thời gian thay đổi và người thực hiện, phục vụ việc truy vết và kiểm tra tiến độ.
+| Mã | Quy tắc |
+|---|---|
+| QT-01 | Số điện thoại khách hàng là duy nhất; nhập số đã tồn tại thì hiển thị hồ sơ có sẵn thay vì tạo mới. |
+| QT-02 | Số điện thoại được chuẩn hóa về 10 chữ số bắt đầu bằng 0 trước khi lưu (+84…, 84…, dấu cách, dấu chấm đều quy về dạng chuẩn). |
+| QT-03 | Thiết bị xác định duy nhất bằng serial/IMEI; một thiết bị chỉ thuộc một khách hàng tại một thời điểm. |
+| QT-04 | Hạn cam kết sinh tự động từ thời điểm tiếp nhận: Cao = 24 giờ, Trung bình = 72 giờ, Thấp = 120 giờ; chỉ tính ngày làm việc (thứ Hai–thứ Bảy). |
+| QT-05 | Còn bảo hành nếu (ngày tiếp nhận − ngày mua) ≤ số tháng bảo hành; không có ngày mua thì đánh dấu "Chưa xác minh". Bước phê duyệt của quản lý nằm ngoài phạm vi. |
+| QT-06 | Phiếu chỉ chuyển trạng thái theo vòng đời; không quay lại trạng thái trước; mọi lần chuyển ghi vào `ticket_status_log`. |
+| QT-13 | Không xóa vật lý phiếu và hồ sơ khách hàng: hệ thống không cung cấp thao tác xóa. |
+| QT-15 | Số điện thoại hiển thị dạng che với mọi vai trò trừ Quản lý trung tâm. |
 
 ## 1.6. Bảng truy vết yêu cầu
 
@@ -148,7 +149,8 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 | FR5 | US5 | UC5 | SHOULD |
 | FR6 | US6 | UC6 | SHOULD |
 | FR7 | US7 | UC7 | COULD |
-| FR8 | US8 | UC8 | COULD |
+
+Bản 08/10 có 8 User Story. Bản 18/10 còn 7: danh sách sắp hoặc đã quá hạn là bộ lọc của US6, không còn là một User Story riêng. US7 chỉ là xem lịch sử trạng thái.
 
 ---
 
@@ -156,34 +158,34 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 ## 2.1. Use Case Diagram
 
-**Actor (2):**
-- Nhân viên tiếp nhận.
-- Quản lý trung tâm.
+**Actor (2):** Nhân viên tiếp nhận; Quản lý trung tâm.
 
-**Use Case (8):**
-- UC1: Tra cứu khách hàng.
-- UC2: Ghi nhận yêu cầu mới.
-- UC3: Phân loại yêu cầu.
+**Use Case (7):**
+
+- UC1: Tra cứu khách hàng theo số điện thoại.
+- UC2: Ghi nhận phiếu bảo hành mới.
+- UC3: Phân loại phiếu theo nhóm sự cố.
 - UC4: Xác định mức ưu tiên.
 - UC5: Xem hạn cam kết.
-- UC6: Xem danh sách và trạng thái.
-- UC7: Xem danh sách quá hạn.
-- UC8: Xem lịch sử thay đổi trạng thái.
+- UC6: Xem danh sách phiếu và trạng thái, gồm phiếu sắp hoặc đã quá hạn.
+- UC7: Xem lịch sử thay đổi trạng thái.
 
-## 2.2. Đặc tả Use Case chính
+## 2.2. Đặc tả Use Case chính — UC2 Ghi nhận phiếu bảo hành mới
 
-**Điều kiện trước:** Nhân viên tiếp nhận đã đăng nhập.
-
-**Điều kiện sau:** Yêu cầu mới được tạo với mã tự động, sẵn sàng để phân loại (UC3).
+- **Actor chính:** Nhân viên tiếp nhận.
+- **User Story liên quan:** US2.
+- **Mục tiêu:** Tạo phiếu bảo hành mới với mã tự động.
+- **Điều kiện trước:** Nhân viên tiếp nhận đã đăng nhập.
+- **Điều kiện sau:** Phiếu mới được tạo với mã tự động, trạng thái "Mới tiếp nhận", sẵn sàng để phân loại (UC3).
 
 ### Luồng chính
 
 1. Nhân viên tiếp nhận chọn "Tạo yêu cầu mới".
 2. Hệ thống hiển thị form nhập thông tin.
-3. Nhân viên nhập số điện thoại khách hàng — hệ thống tự động điền thông tin nếu khách đã tồn tại (liên quan UC1).
+3. Nhân viên nhập số điện thoại khách hàng — hệ thống tự động điền thông tin nếu khách đã tồn tại (UC1).
 4. Nhân viên nhập sản phẩm và mô tả lỗi.
 5. Nhân viên nhấn Lưu.
-6. Hệ thống kiểm tra hợp lệ, tạo mã yêu cầu, lưu trạng thái "Mới tiếp nhận".
+6. Hệ thống kiểm tra hợp lệ, tạo mã phiếu, lưu trạng thái "Mới tiếp nhận".
 7. Hệ thống hiển thị xác nhận thành công.
 
 ### Luồng ngoại lệ
@@ -195,19 +197,17 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 # MỤC 3 — THIẾT KẾ KIẾN TRÚC
 
-## 3.1. Sơ đồ kiến trúc phân lớp (Layered Architecture) cho luồng L2
+## 3.1. Sơ đồ kiến trúc phân lớp cho luồng L2
 
-**Chú thích:** Mũi tên là hướng phụ thuộc một chiều. Presentation gọi Business qua HTTP/JSON; Business gọi Repository qua interface; Repository dùng MySQL để đọc/ghi CSDL trên Aiven for MySQL. Lớp dưới không gọi ngược lớp trên.
+**Chú thích:** Mũi tên là hướng phụ thuộc một chiều. Presentation gọi Business qua HTTP/JSON; Business gọi Repository qua interface; Repository dùng MySQL để đọc/ghi CSDL. Lớp dưới không gọi ngược lớp trên.
 
-<!-- Nếu muốn hiển thị sơ đồ, hãy xuất ảnh kiến trúc vào thư mục ảnh của repository rồi thêm:
-![Sơ đồ kiến trúc phân lớp](images/architecture.png)
--->
+**Ngoài phạm vi:** phân công kỹ thuật viên (L4), kho linh kiện (L5), bán hàng/khuyến mãi, báo cáo doanh thu, SMS/Zalo, khảo sát hài lòng, đăng nhập/quản lý nhân sự.
 
 ## 3.2. Ba câu lập luận
 
-1. Vì NFR1 yêu cầu thời gian phản hồi API tra cứu/tạo yêu cầu ≤ 3 giây, tôi chọn kiến trúc phân lớp và tách truy cập dữ liệu vào Repository để các truy vấn được tập trung, có thể tối ưu/index mà không sửa lớp giao diện; đánh đổi là phải đi qua thêm một lớp trung gian nên mã nguồn có nhiều thành phần hơn.
+1. Vì NFR1 yêu cầu thời gian phản hồi API tra cứu/tạo phiếu ≤ 3 giây, tôi chọn kiến trúc phân lớp và tách truy cập dữ liệu vào Repository để các truy vấn được tập trung, có thể tối ưu/index mà không sửa lớp giao diện; đánh đổi là phải đi qua thêm một lớp trung gian nên mã nguồn có nhiều thành phần hơn.
 
-2. Vì NFR2 yêu cầu lưu trữ dữ liệu yêu cầu tối thiểu 2 năm, tôi chọn MySQL 8 (Aiven) và tách lịch sử trạng thái thành bảng `ticket_status_log` thay vì nhúng mảng vào phiếu; đánh đổi là phát sinh thêm bản ghi và cần JOIN khi xem lịch sử, nhưng đổi lại dữ liệu truy vết rõ ràng và khóa ngoại được CSDL kiểm tra.
+2. Vì NFR2 yêu cầu lưu trữ dữ liệu phiếu tối thiểu 2 năm, tôi chọn MySQL 8 và tách lịch sử trạng thái thành bảng `ticket_status_log` thay vì nhúng mảng vào phiếu; đánh đổi là phát sinh thêm bản ghi và cần JOIN khi xem lịch sử, nhưng dữ liệu truy vết rõ ràng và khóa ngoại được CSDL kiểm tra.
 
 3. Vì NFR3 yêu cầu tỉ lệ sẵn sàng hệ thống ≥ 98%, tôi tách Presentation, Business và Data Access để giới hạn phạm vi ảnh hưởng khi thay đổi/sửa lỗi một thành phần và giữ lớp nghiệp vụ độc lập với công nghệ lưu trữ; đánh đổi là tăng chi phí thiết kế và kiểm thử giữa các lớp.
 
@@ -215,13 +215,31 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 # MỤC 4 — MÔ HÌNH DỮ LIỆU (TRACK SE)
 
-Hệ quản trị là **MySQL 8** trên [Aiven for MySQL](https://aiven.io/free-mysql-database) (gói miễn phí: 1 CPU, 1 GB RAM, 1 GB đĩa, một node). Kết nối bắt buộc SSL. Không dùng MongoDB.
+## 4.1. ERD
 
-ERD (`docs/erd.drawio`, bản cùng nội dung ở `erd.drawio`) gồm 5 bảng quan hệ. Mỗi bảng có khóa chính. Có 5 khóa ngoại. Không có bảng cô lập. Lịch sử trạng thái là bảng `ticket_status_log`, không nhúng trong `ticket`.
+ERD gồm 5 bảng (`customer`, `device`, `issue_category`, `ticket`, `ticket_status_log`), mỗi bảng có khóa chính, có khóa ngoại, không có bảng cô lập. Ký pháp chân chim. Lịch sử trạng thái là bảng `ticket_status_log`, không nhúng trong `ticket`.
 
-DDL chạy được nằm ở `docs/schema.sql` (InnoDB, `utf8mb4`). Nội dung CREATE TABLE dưới đây trùng file đó.
+## 4.2. Mỗi bảng phục vụ yêu cầu nào
 
-## 4.1. SQL DDL
+| Bảng | Phục vụ FR | Lý do tồn tại |
+|---|---|---|
+| `customer` | FR1, FR2, FR6 | Thực thể khách hàng; số điện thoại là khóa nghiệp vụ UNIQUE (QT-01), khóa chính là khóa nhân tạo. |
+| `device` | FR1, FR2, FR6 | Thiết bị xác định bằng serial duy nhất (QT-03); một khách có nhiều thiết bị. |
+| `issue_category` | FR3, FR6 | Danh mục nhóm sự cố; thêm nhóm mới chỉ thêm dữ liệu, không sửa mã. |
+| `ticket` | FR2, FR3, FR4, FR5, FR6, FR7 | Thực thể trung tâm của luồng: phiếu bảo hành và hạn cam kết. |
+| `ticket_status_log` | FR7 | Lịch sử trạng thái (QT-06), không ghi đè một cột `status` duy nhất. |
+
+## 4.3. Chỉ mục và ràng buộc
+
+- `customer.phone` là UNIQUE (QT-01, QT-02).
+- `device.serial_no` là UNIQUE (QT-03).
+- `ticket.ticket_code` là UNIQUE.
+- `device.customer_id`, `ticket.customer_id`, `ticket.device_id`, `ticket.category_id`, `ticket_status_log.ticket_id` là khóa ngoại thật của MySQL. InnoDB kiểm tra tham chiếu.
+- Không có bảng cô lập: `customer` được `device` và `ticket` tham chiếu; `device` được `ticket` tham chiếu; `issue_category` được `ticket` tham chiếu; `ticket` được `ticket_status_log` tham chiếu.
+
+## 4.4. SQL DDL
+
+DDL đầy đủ nằm ở `docs/schema.sql`.
 
 ```sql
 CREATE TABLE customer (
@@ -265,18 +283,18 @@ CREATE TABLE device (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ticket (
-  ticket_id         BIGINT NOT NULL AUTO_INCREMENT,
-  ticket_code       VARCHAR(20) NOT NULL,
-  customer_id       BIGINT      NOT NULL,
-  device_id         BIGINT      NOT NULL,
-  category_id       INT         NULL,
-  issue_desc        TEXT        NOT NULL,
-  priority          VARCHAR(10) NULL,
-  status            VARCHAR(30) NOT NULL,
-  received_at       DATETIME    NOT NULL,
-  due_date          DATETIME    NULL,
-  closed_at         DATETIME    NULL,
-  is_warranty       BOOLEAN     NOT NULL,
+  ticket_id    BIGINT NOT NULL AUTO_INCREMENT,
+  ticket_code  VARCHAR(20) NOT NULL,
+  customer_id  BIGINT      NOT NULL,
+  device_id    BIGINT      NOT NULL,
+  category_id  INT         NULL,
+  issue_desc   TEXT        NOT NULL,
+  priority     VARCHAR(10) NULL,
+  status       VARCHAR(30) NOT NULL,
+  received_at  DATETIME    NOT NULL,
+  due_date     DATETIME    NULL,
+  closed_at    DATETIME    NULL,
+  is_warranty  BOOLEAN     NOT NULL,
   PRIMARY KEY (ticket_id),
   UNIQUE KEY uk_ticket_code (ticket_code),
   KEY idx_ticket_customer_id (customer_id),
@@ -314,51 +332,21 @@ CREATE TABLE ticket_status_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
-## 4.2. Quan hệ khóa ngoại
+## 4.5. API Contract
 
-| Khóa ngoại | Bảng con | Cột | Bảng cha | Ý nghĩa |
+`{id}` là `ticket.ticket_id` kiểu `BIGINT`.
+
+| # | Endpoint | Mô tả | Quy tắc | Truy vết |
 |---|---|---|---|---|
-| `fk_device_customer` | `device` | `customer_id` | `customer` | Một khách sở hữu nhiều thiết bị |
-| `fk_ticket_customer` | `ticket` | `customer_id` | `customer` | Một khách gửi nhiều phiếu |
-| `fk_ticket_device` | `ticket` | `device_id` | `device` | Một thiết bị có nhiều phiếu |
-| `fk_ticket_category` | `ticket` | `category_id` | `issue_category` | Một nhóm sự cố gắn với nhiều phiếu |
-| `fk_status_log_ticket` | `ticket_status_log` | `ticket_id` | `ticket` | Một phiếu có nhiều dòng lịch sử trạng thái |
+| 1 | `GET /api/customers?phone={sdt}` | Tra cứu khách hàng theo SĐT đã chuẩn hóa | QT-01, QT-02, QT-15 | US1, UC1 |
+| 2 | `POST /api/tickets` | Ghi nhận phiếu bảo hành mới | QT-02, QT-03, QT-05 | US2, UC2 |
+| 3 | `PUT /api/tickets/{id}/phan-loai` | Gán `category_id`, chuyển trạng thái đã phân loại | QT-06 | US3, UC3 |
+| 4 | `PUT /api/tickets/{id}/uu-tien` | Gán `priority` và tính `due_date` | QT-04 | US4, UC4, US5 |
+| 5 | `GET /api/tickets/{id}` | Xem chi tiết phiếu, gồm `due_date` | QT-15 | US5, UC5 |
+| 6 | `GET /api/tickets?qua_han=true` | Danh sách phiếu, lọc phiếu sắp hoặc đã quá `due_date` | QT-04 | US6, UC6 |
+| 7 | `GET /api/tickets/{id}/status-log` | Đọc `ticket_status_log` của phiếu | QT-06 | US7, UC7 |
 
-`ON DELETE RESTRICT` để không xóa vật lý phiếu khi còn lịch sử. `changed_by` lưu mã người thực hiện, chưa có khóa ngoại vì bảng nhân viên nằm ngoài phạm vi L2.
-
-## 4.3. Cột cho phép NULL và mã lưu trữ
-
-- `device.product_name` thay cho `product_id`: luồng L2 không có bảng `product`, tránh khóa ngoại trỏ tới bảng không tồn tại.
-- `customer` không có cột `email`. `address` và `segment` được NULL.
-- `device.note` là ghi chú thiết bị, được NULL. `purchase_date` được NULL khi khách không nhớ ngày mua.
-- `ticket.category_id`, `ticket.priority`, `ticket.due_date` để NULL lúc mới ghi nhận. Phân loại mới gán `category_id`. Xác định ưu tiên mới gán `priority` và tính `due_date`.
-- Hạn cam kết là cột `due_date`. Mã hiển thị cho khách là `ticket_code`. Khóa chính là `ticket_id`. Không có cột `warranty_verified` và không có `center_id`.
-
-| Cột `status` | Nhãn trên giao diện |
-|---|---|
-| `MOI_TIEP_NHAN` | Mới tiếp nhận |
-| `DA_PHAN_LOAI` | Đã phân loại |
-| `DA_XAC_DINH_UU_TIEN` | Đã xác định ưu tiên |
-
-| Cột `priority` | Nhãn trên giao diện |
-|---|---|
-| `CAO` | Cao |
-| `TRUNG_BINH` | Trung bình |
-| `THAP` | Thấp |
-
-## 4.4. API Contract
-
-`{id}` trong đường dẫn là `ticket.ticket_id` (BIGINT), không phải chuỗi ObjectId.
-
-| # | Endpoint | Mô tả | Quy tắc áp dụng |
-|---|---|---|---|
-| 1 | `GET /api/customers?phone={sdt}` | Tra cứu khách hàng theo SĐT đã chuẩn hóa | QT-01, QT-02, QT-15 |
-| 2 | `POST /api/tickets` | Ghi nhận phiếu bảo hành mới (`customer`, `device`, `issue_desc`) | QT-02, QT-03, QT-05 |
-| 3 | `PUT /api/tickets/{id}/phan-loai` | Gán `category_id` và `priority`, tự tính `due_date` | QT-04 |
-| 4 | `PUT /api/tickets/{id}/xac-minh-bao-hanh` | Quản lý phê duyệt khi không xác minh được ngày mua | QT-05 |
-| 5 | `GET /api/tickets/{id}` | Xem chi tiết phiếu | QT-15 |
-| 6 | `GET /api/tickets?status=qua_han` | Danh sách phiếu sắp hoặc đã quá `due_date` | QT-06 |
-| 7 | `GET /api/tickets/{id}/status-log` | Đọc bảng `ticket_status_log` của phiếu | QT-06 |
+`PUT /api/tickets/{id}/xac-minh-bao-hanh` và `GET /api/bao-cao/theo-nhom-su-co` không thuộc phạm vi: QT-05 ghi bước phê duyệt của quản lý nằm ngoài phạm vi, báo cáo nằm trong phần ngoài phạm vi của Mục 3.1.
 
 ### Response mẫu — POST /api/tickets
 
@@ -372,7 +360,7 @@ CREATE TABLE ticket_status_log (
 }
 ```
 
-## 4.5. Bảng quy tắc Validation
+### Bảng quy tắc validation
 
 | Trường | Bắt buộc | Kiểu MySQL | Ràng buộc |
 |---|---|---|---|
@@ -386,60 +374,49 @@ CREATE TABLE ticket_status_log (
 
 # MỤC 5 — WIREFRAME 3 MÀN HÌNH
 
-Có 3 màn hình:
+Ba màn hình: (1) Danh sách phiếu bảo hành — UC5, UC6; (2) Tạo phiếu mới — UC1, UC2; (3) Chi tiết phiếu — UC3, UC4, UC7. Mọi trường hiển thị đều có trong Mục 4. Nhãn dùng bảng thuật ngữ ở Mục 1.
 
-1. Danh sách yêu cầu bảo hành — UC5, UC6.
-2. Tạo yêu cầu mới — UC1, UC2.
-3. Chi tiết yêu cầu — UC3, UC4.
+## 5.1. Màn hình 1 — Danh sách phiếu bảo hành
 
-Mọi trường hiển thị đều tồn tại trong mô hình dữ liệu ở Mục 4; nhãn dùng đúng bảng thuật ngữ ở Mục 1.
-
-<!-- Có thể chèn ảnh wireframe tại đây sau khi xuất ảnh từ công cụ thiết kế.
-Ví dụ:
-![Wireframe danh sách yêu cầu bảo hành](images/wireframe-list.png)
--->
-
-## 5.1. Màn hình 1 — Danh sách yêu cầu bảo hành
-
-| STT | Thành phần trên màn hình | Ý nghĩa | Use Case liên quan |
+| STT | Thành phần | Ý nghĩa | Use Case |
 |---|---|---|---|
-| 1 | Ô tìm kiếm | Tra cứu yêu cầu bảo hành theo thông tin phù hợp | UC6 |
-| 2 | Mã yêu cầu | Mã định danh của phiếu bảo hành | UC6 |
-| 3 | Khách hàng | Hiển thị thông tin khách hàng của yêu cầu | UC6 |
-| 4 | Thiết bị | Hiển thị thiết bị liên quan đến yêu cầu | UC6 |
-| 5 | Nhóm sự cố | Hiển thị nhóm sự cố đã phân loại | UC6 |
-| 6 | Mức ưu tiên | Hiển thị mức ưu tiên: Cao / Trung bình / Thấp | UC6 |
-| 7 | Trạng thái | Hiển thị trạng thái hiện tại của yêu cầu | UC6 |
-| 8 | Hạn cam kết | Hiển thị thời hạn SLA của yêu cầu | UC5 |
-| 9 | Danh sách quá hạn | Cho phép nhận biết các yêu cầu đã hoặc sắp quá hạn | UC7 |
+| 1 | Ô tìm kiếm | Tra cứu phiếu theo thông tin phù hợp | UC6 |
+| 2 | Mã phiếu | Mã hiển thị của phiếu | UC6, `ticket.ticket_code` |
+| 3 | Khách hàng | Khách hàng của phiếu | UC6, `customer.full_name` |
+| 4 | Thiết bị | Thiết bị của phiếu | UC6, `device.product_name` |
+| 5 | Nhóm sự cố | Nhóm sự cố đã phân loại | UC6, `issue_category.category_name` |
+| 6 | Mức ưu tiên | Cao / Trung bình / Thấp | UC6, `ticket.priority` |
+| 7 | Trạng thái | Trạng thái hiện tại | UC6, `ticket.status` |
+| 8 | Hạn cam kết | Thời hạn SLA | UC5, `ticket.due_date` |
+| 9 | Phiếu quá hạn | Nhận biết phiếu sắp hoặc đã quá hạn | UC6, so sánh `ticket.due_date` |
 
-## 5.2. Màn hình 2 — Tạo yêu cầu bảo hành
+## 5.2. Màn hình 2 — Tạo phiếu bảo hành
 
-| STT | Thành phần trên màn hình | Ý nghĩa | Dữ liệu liên quan |
+| STT | Thành phần | Ý nghĩa | Dữ liệu |
 |---|---|---|---|
-| 1 | Số điện thoại khách hàng | Nhập số điện thoại để tra cứu khách hàng | `customer.phone` |
-| 2 | Họ tên khách hàng | Hiển thị thông tin khách hàng sau khi tra cứu | `customer.full_name` |
-| 3 | Thông tin thiết bị | Chọn/nhập thiết bị của khách hàng | `device.product_name`, `device.serial_no` |
-| 4 | Mô tả sự cố | Nhập nội dung lỗi hoặc vấn đề của thiết bị | `ticket.issue_desc` |
-| 5 | Nhóm sự cố | Phân loại yêu cầu theo nhóm sự cố | `ticket.category_id` |
-| 6 | Mức ưu tiên | Chọn mức ưu tiên cho yêu cầu | `ticket.priority` |
-| 7 | Nút Lưu/Tạo yêu cầu | Tạo phiếu bảo hành mới | `ticket` |
-| 8 | Thông báo lỗi | Thông báo khi thiếu dữ liệu hoặc dữ liệu không hợp lệ | UC2 / UC3 / UC4 |
+| 1 | Số điện thoại khách hàng | Tra cứu khách hàng | `customer.phone` |
+| 2 | Họ tên khách hàng | Hiển thị sau khi tra cứu | `customer.full_name` |
+| 3 | Thông tin thiết bị | Chọn hoặc nhập thiết bị | `device.product_name`, `device.serial_no` |
+| 4 | Mô tả sự cố | Nội dung lỗi | `ticket.issue_desc` |
+| 5 | Nút Lưu | Tạo phiếu mới | `ticket` |
+| 6 | Thông báo lỗi | Thiếu dữ liệu hoặc dữ liệu không hợp lệ | UC2 |
 
-## 5.3. Màn hình 3 — Chi tiết yêu cầu bảo hành
+Nhóm sự cố và mức ưu tiên không nằm trên màn tạo mới. Hai thao tác đó thuộc màn chi tiết (UC3, UC4).
 
-| STT | Thành phần trên màn hình | Ý nghĩa | Dữ liệu liên quan |
+## 5.3. Màn hình 3 — Chi tiết phiếu bảo hành
+
+| STT | Thành phần | Ý nghĩa | Dữ liệu |
 |---|---|---|---|
-| 1 | Mã yêu cầu | Mã hiển thị của phiếu bảo hành | `ticket.ticket_code` |
-| 2 | Thông tin khách hàng | Hiển thị khách hàng của yêu cầu | `customer` |
-| 3 | Thông tin thiết bị | Hiển thị thiết bị liên quan | `device` |
-| 4 | Mô tả sự cố | Hiển thị nội dung lỗi đã ghi nhận | `ticket.issue_desc` |
-| 5 | Nhóm sự cố | Hiển thị nhóm sự cố của yêu cầu | `ticket.category_id` |
-| 6 | Mức ưu tiên | Hiển thị mức ưu tiên hiện tại | `ticket.priority` |
-| 7 | Hạn cam kết (SLA) | Hiển thị thời hạn phải hoàn tất yêu cầu | `ticket.due_date` |
-| 8 | Trạng thái hiện tại | Cho biết yêu cầu đang ở trạng thái nào | `ticket.status` |
-| 9 | Lịch sử trạng thái | Hiển thị các lần thay đổi trạng thái | `ticket_status_log` |
-| 10 | Thời gian cập nhật | Hiển thị thời điểm thay đổi trạng thái | `ticket_status_log.changed_at` |
+| 1 | Mã phiếu | Mã hiển thị của phiếu đang xem | `ticket.ticket_code` |
+| 2 | Thông tin khách hàng | Khách hàng của phiếu | `customer` |
+| 3 | Thông tin thiết bị | Thiết bị liên quan | `device` |
+| 4 | Mô tả sự cố | Nội dung lỗi đã ghi nhận | `ticket.issue_desc` |
+| 5 | Nhóm sự cố | Nhóm sự cố của phiếu | `ticket.category_id` |
+| 6 | Mức ưu tiên | Mức ưu tiên hiện tại | `ticket.priority` |
+| 7 | Hạn cam kết (SLA) | Thời hạn phải hoàn tất phiếu | `ticket.due_date` |
+| 8 | Trạng thái hiện tại | Phiếu đang ở trạng thái nào | `ticket.status` |
+| 9 | Lịch sử trạng thái | Các lần thay đổi trạng thái | `ticket_status_log`, UC7 |
+| 10 | Thời gian cập nhật | Thời điểm thay đổi trạng thái | `ticket_status_log.changed_at` |
 
 ---
 
@@ -447,11 +424,13 @@ Ví dụ:
 
 | Công cụ | Dùng vào việc gì | Áp dụng ở phần nào | Đã kiểm chứng thế nào |
 |---|---|---|---|
-| Claude (Anthropic) | Hỗ trợ soạn khung SRS, bảng truy vết, sơ đồ Use Case/kiến trúc/ERD nháp, gợi ý API Contract. | Mục 1–6 SRS; Thành phần 2, 3, 4, 5. | Tự đọc lại toàn bộ, đối chiếu bối cảnh case study và phạm vi đã duyệt buổi 2; tự kiểm tra bảng truy vết không ô trống; tự chỉnh sơ đồ theo quy ước đã học. |
-| ChatGPT (OpenAI) | Hỗ trợ soạn khung SRS, bảng truy vết, sơ đồ Use Case/kiến trúc/ERD nháp, gợi ý API Contract; rà soát tính nhất quán giữa các phần. | Rà soát Mục 1–6 SRS; tập trung Mục 3 (kiến trúc), Mục 4 (mô hình dữ liệu), Mục 5 (wireframe). | Tự kiểm tra các nội dung được gợi ý; đối chiếu ERD với mô hình dữ liệu và phạm vi đề tài; tự quyết định và chỉnh sửa nội dung cuối cùng trước khi đưa vào báo cáo. |
-| Figma AI | Hỗ trợ gợi ý bố cục giao diện và tham khảo thiết kế wireframe cho các màn hình tiếp nhận, tạo mới và xem chi tiết phiếu bảo hành. | Mục 5 — Wireframe giao diện. | Tự kiểm tra các nội dung được gợi ý, đối chiếu với yêu cầu đề tài và tự chỉnh sửa trước khi đưa vào báo cáo. |
-| Stitch | Hỗ trợ tạo mẫu giao diện và gợi ý cách sắp xếp các thành phần trên màn hình tiếp nhận, tạo mới và xem chi tiết phiếu bảo hành. | Mục 5 — Wireframe giao diện. | Tự rà soát mẫu giao diện, đối chiếu yêu cầu nghiệp vụ và chỉnh sửa trước khi đưa vào báo cáo. |
+| Claude (Anthropic) | Hỗ trợ soạn khung SRS, bảng truy vết, sơ đồ Use Case/kiến trúc/ERD nháp, gợi ý API contract. | Mục 1–5 SRS. | Tự đọc lại toàn bộ, đối chiếu bối cảnh case study và phạm vi đã duyệt; tự kiểm tra bảng truy vết không ô trống; tự chỉnh sơ đồ theo quy ước đã học. |
+| ChatGPT (OpenAI) | Hỗ trợ soạn khung SRS, bảng truy vết, sơ đồ Use Case/kiến trúc/ERD nháp, gợi ý API contract. | Rà soát Mục 1–5; tập trung Mục 3, Mục 4 và Mục 5. | Tự kiểm tra các nội dung được gợi ý; đối chiếu ERD với mô hình dữ liệu; tự quyết định và chỉnh sửa nội dung cuối cùng. |
+| Figma AI | Hỗ trợ gợi ý bố cục giao diện và tham khảo thiết kế wireframe. | Mục 5 — Wireframe. | Tự kiểm tra bố cục và trường dữ liệu, đối chiếu ERD trước khi đưa vào báo cáo. |
+| Stitch | Hỗ trợ tạo mẫu giao diện và gợi ý cách sắp xếp thành phần trên màn hình. | Mục 5 — Wireframe. | Tự rà soát mẫu giao diện, đối chiếu yêu cầu nghiệp vụ và chỉnh sửa trước khi đưa vào báo cáo. |
+| Cursor | Hỗ trợ đối chiếu đề bài, case study và phản hồi giảng viên; chỉnh SRS, `schema.sql` và bảng truy vết cho khớp ERD MySQL. | Mục 1, Mục 4, phụ lục; `docs/srs.md`, `docs/schema.sql`, `docs/thay-doi-thiet-ke.md`. | Tự đọc bản Word, đối chiếu ERD và `docs/schema.sql`; tự quyết định nội dung giữ lại. |
 
----
-
-**Kết thúc tài liệu SRS.**
+Tôi xác nhận đã đọc, hiểu và chịu trách nhiệm về toàn bộ nội dung nộp.  
+Họ tên: Nguyễn Ái Băng Nhi  
+MSSV: 2374802010368  
+Ngày: 15/10/2026
