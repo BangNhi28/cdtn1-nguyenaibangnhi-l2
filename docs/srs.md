@@ -21,6 +21,8 @@
 | Phiên bản | Ngày | Nội dung thay đổi | Người thực hiện |
 |---|---|---|---|
 | 1.0 | 08/10/2026 | Cập nhật tài liệu SRS; xác định phạm vi hệ thống, yêu cầu nghiệp vụ, yêu cầu chức năng và phi chức năng; xây dựng bảng truy vết, mô hình kiến trúc, ERD và wireframe giao diện. | Nguyễn Ái Băng Nhi |
+| 1.1 | 18/10/2026 | Bỏ schema MongoDB. Mục 4 đổi sang SQL DDL MySQL 8 (Aiven); lịch sử trạng thái nằm ở bảng `ticket_status_log`. ERD vẽ lại cho khớp DDL. Wireframe và API dùng đúng tên cột. | Nguyễn Ái Băng Nhi |
+| 1.2 | 18/10/2026 | Chỉnh DDL theo ERD mới: bỏ `customer.email` và `ticket.warranty_verified`; thêm `device.note`. Lịch sử trạng thái giữ ở bảng `ticket_status_log`. | Nguyễn Ái Băng Nhi |
 
 ---
 
@@ -195,7 +197,7 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 ## 3.1. Sơ đồ kiến trúc phân lớp (Layered Architecture) cho luồng L2
 
-**Chú thích:** Mũi tên là hướng phụ thuộc một chiều. Presentation gọi Business qua HTTP/JSON; Business gọi Repository qua interface; Repository dùng SQL để đọc/ghi CSDL. Lớp dưới không gọi ngược lớp trên.
+**Chú thích:** Mũi tên là hướng phụ thuộc một chiều. Presentation gọi Business qua HTTP/JSON; Business gọi Repository qua interface; Repository dùng MySQL để đọc/ghi CSDL trên Aiven for MySQL. Lớp dưới không gọi ngược lớp trên.
 
 <!-- Nếu muốn hiển thị sơ đồ, hãy xuất ảnh kiến trúc vào thư mục ảnh của repository rồi thêm:
 ![Sơ đồ kiến trúc phân lớp](images/architecture.png)
@@ -205,7 +207,7 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 1. Vì NFR1 yêu cầu thời gian phản hồi API tra cứu/tạo yêu cầu ≤ 3 giây, tôi chọn kiến trúc phân lớp và tách truy cập dữ liệu vào Repository để các truy vấn được tập trung, có thể tối ưu/index mà không sửa lớp giao diện; đánh đổi là phải đi qua thêm một lớp trung gian nên mã nguồn có nhiều thành phần hơn.
 
-2. Vì NFR2 yêu cầu lưu trữ dữ liệu yêu cầu tối thiểu 2 năm, tôi chọn mô hình dữ liệu quan hệ và tách lịch sử trạng thái thành `ticket_status_log` thay vì ghi đè trạng thái; đánh đổi là phát sinh thêm bản ghi và cần JOIN khi xem lịch sử, nhưng đổi lại dữ liệu truy vết rõ ràng và hạn chế dư thừa.
+2. Vì NFR2 yêu cầu lưu trữ dữ liệu yêu cầu tối thiểu 2 năm, tôi chọn MySQL 8 (Aiven) và tách lịch sử trạng thái thành bảng `ticket_status_log` thay vì nhúng mảng vào phiếu; đánh đổi là phát sinh thêm bản ghi và cần JOIN khi xem lịch sử, nhưng đổi lại dữ liệu truy vết rõ ràng và khóa ngoại được CSDL kiểm tra.
 
 3. Vì NFR3 yêu cầu tỉ lệ sẵn sàng hệ thống ≥ 98%, tôi tách Presentation, Business và Data Access để giới hạn phạm vi ảnh hưởng khi thay đổi/sửa lỗi một thành phần và giữ lớp nghiệp vụ độc lập với công nghệ lưu trữ; đánh đổi là tăng chi phí thiết kế và kiểm thử giữa các lớp.
 
@@ -213,136 +215,172 @@ Là quản lý trung tâm, tôi muốn xem lịch sử thay đổi trạng thái
 
 # MỤC 4 — MÔ HÌNH DỮ LIỆU (TRACK SE)
 
-ERD gồm 5 bảng, mỗi bảng có khóa chính, 4 quan hệ khóa ngoại, không có bảng cô lập.
+Hệ quản trị là **MySQL 8** trên [Aiven for MySQL](https://aiven.io/free-mysql-database) (gói miễn phí: 1 CPU, 1 GB RAM, 1 GB đĩa, một node). Kết nối bắt buộc SSL. Không dùng MongoDB.
 
-<!-- Nếu muốn hiển thị ERD, hãy xuất ảnh ERD vào thư mục ảnh của repository rồi thêm:
-![ERD hệ thống SMART CRM – Mekong Mobile](images/erd.png)
--->
+ERD (`docs/erd.drawio`, bản cùng nội dung ở `erd.drawio`) gồm 5 bảng quan hệ. Mỗi bảng có khóa chính. Có 5 khóa ngoại. Không có bảng cô lập. Lịch sử trạng thái là bảng `ticket_status_log`, không nhúng trong `ticket`.
 
-## 4.1. Customers
+DDL chạy được nằm ở `docs/schema.sql` (InnoDB, `utf8mb4`). Nội dung CREATE TABLE dưới đây trùng file đó.
 
-```json
-{
-  "_id": "ObjectId",
-  "full_name": "Nguyen Van A",
-  "phone": "0901234567",
-  "email": "a@example.com",
-  "address": "...",
-  "segment": "THUONG_XUYEN",
-  "created_at": "ISODate"
-}
+## 4.1. SQL DDL
+
+```sql
+CREATE TABLE customer (
+  customer_id BIGINT NOT NULL AUTO_INCREMENT,
+  full_name   VARCHAR(120) NOT NULL,
+  phone       VARCHAR(20)  NOT NULL,
+  address     VARCHAR(255) NULL,
+  segment     VARCHAR(50)  NULL,
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (customer_id),
+  UNIQUE KEY uk_customer_phone (phone),
+  CONSTRAINT chk_customer_phone CHECK (phone REGEXP '^0[0-9]{9}$')
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE issue_category (
+  category_id      INT NOT NULL AUTO_INCREMENT,
+  category_name    VARCHAR(60) NOT NULL,
+  default_priority VARCHAR(10) NOT NULL,
+  is_active        BOOLEAN     NOT NULL DEFAULT TRUE,
+  PRIMARY KEY (category_id),
+  UNIQUE KEY uk_issue_category_name (category_name),
+  CONSTRAINT chk_issue_category_priority CHECK (default_priority IN ('CAO', 'TRUNG_BINH', 'THAP'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE device (
+  device_id       BIGINT NOT NULL AUTO_INCREMENT,
+  customer_id     BIGINT       NOT NULL,
+  product_name    VARCHAR(120) NOT NULL,
+  serial_no       VARCHAR(50)  NOT NULL,
+  purchase_date   DATE         NULL,
+  warranty_months SMALLINT     NOT NULL DEFAULT 12,
+  created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  note            VARCHAR(255) NULL,
+  PRIMARY KEY (device_id),
+  UNIQUE KEY uk_device_serial_no (serial_no),
+  KEY idx_device_customer_id (customer_id),
+  CONSTRAINT fk_device_customer
+    FOREIGN KEY (customer_id) REFERENCES customer (customer_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT chk_device_warranty_months CHECK (warranty_months > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE ticket (
+  ticket_id         BIGINT NOT NULL AUTO_INCREMENT,
+  ticket_code       VARCHAR(20) NOT NULL,
+  customer_id       BIGINT      NOT NULL,
+  device_id         BIGINT      NOT NULL,
+  category_id       INT         NULL,
+  issue_desc        TEXT        NOT NULL,
+  priority          VARCHAR(10) NULL,
+  status            VARCHAR(30) NOT NULL,
+  received_at       DATETIME    NOT NULL,
+  due_date          DATETIME    NULL,
+  closed_at         DATETIME    NULL,
+  is_warranty       BOOLEAN     NOT NULL,
+  PRIMARY KEY (ticket_id),
+  UNIQUE KEY uk_ticket_code (ticket_code),
+  KEY idx_ticket_customer_id (customer_id),
+  KEY idx_ticket_device_id (device_id),
+  KEY idx_ticket_category_id (category_id),
+  KEY idx_ticket_status (status),
+  KEY idx_ticket_due_date (due_date),
+  CONSTRAINT fk_ticket_customer
+    FOREIGN KEY (customer_id) REFERENCES customer (customer_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_ticket_device
+    FOREIGN KEY (device_id) REFERENCES device (device_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_ticket_category
+    FOREIGN KEY (category_id) REFERENCES issue_category (category_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT chk_ticket_priority CHECK (priority IS NULL OR priority IN ('CAO', 'TRUNG_BINH', 'THAP')),
+  CONSTRAINT chk_ticket_status CHECK (status IN ('MOI_TIEP_NHAN', 'DA_PHAN_LOAI', 'DA_XAC_DINH_UU_TIEN')),
+  CONSTRAINT chk_ticket_issue_desc CHECK (CHAR_LENGTH(issue_desc) BETWEEN 10 AND 500)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE ticket_status_log (
+  log_id      BIGINT NOT NULL AUTO_INCREMENT,
+  ticket_id   BIGINT       NOT NULL,
+  from_status VARCHAR(30)  NULL,
+  to_status   VARCHAR(30)  NOT NULL,
+  changed_at  DATETIME     NOT NULL,
+  changed_by  BIGINT       NOT NULL,
+  note        VARCHAR(255) NULL,
+  PRIMARY KEY (log_id),
+  KEY idx_status_log_ticket_id (ticket_id),
+  CONSTRAINT fk_status_log_ticket
+    FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
-- `phone`: unique index, đã chuẩn hóa theo QT-02.
+## 4.2. Quan hệ khóa ngoại
 
-## 4.2. Devices
+| Khóa ngoại | Bảng con | Cột | Bảng cha | Ý nghĩa |
+|---|---|---|---|---|
+| `fk_device_customer` | `device` | `customer_id` | `customer` | Một khách sở hữu nhiều thiết bị |
+| `fk_ticket_customer` | `ticket` | `customer_id` | `customer` | Một khách gửi nhiều phiếu |
+| `fk_ticket_device` | `ticket` | `device_id` | `device` | Một thiết bị có nhiều phiếu |
+| `fk_ticket_category` | `ticket` | `category_id` | `issue_category` | Một nhóm sự cố gắn với nhiều phiếu |
+| `fk_status_log_ticket` | `ticket_status_log` | `ticket_id` | `ticket` | Một phiếu có nhiều dòng lịch sử trạng thái |
 
-```json
-{
-  "_id": "ObjectId",
-  "customer_id": "ObjectId",
-  "product_name": "Dien thoai X",
-  "serial_no": "IMEI123456",
-  "purchase_date": "ISODate",
-  "warranty_months": 12
-}
-```
+`ON DELETE RESTRICT` để không xóa vật lý phiếu khi còn lịch sử. `changed_by` lưu mã người thực hiện, chưa có khóa ngoại vì bảng nhân viên nằm ngoài phạm vi L2.
 
-- `customer_id`: tham chiếu `customers._id`.
-- `serial_no`: unique index theo QT-03.
-- `purchase_date`: có thể null.
+## 4.3. Cột cho phép NULL và mã lưu trữ
 
-## 4.3. Issue Categories
+- `device.product_name` thay cho `product_id`: luồng L2 không có bảng `product`, tránh khóa ngoại trỏ tới bảng không tồn tại.
+- `customer` không có cột `email`. `address` và `segment` được NULL.
+- `device.note` là ghi chú thiết bị, được NULL. `purchase_date` được NULL khi khách không nhớ ngày mua.
+- `ticket.category_id`, `ticket.priority`, `ticket.due_date` để NULL lúc mới ghi nhận. Phân loại mới gán `category_id`. Xác định ưu tiên mới gán `priority` và tính `due_date`.
+- Hạn cam kết là cột `due_date`. Mã hiển thị cho khách là `ticket_code`. Khóa chính là `ticket_id`. Không có cột `warranty_verified` và không có `center_id`.
 
-```json
-{
-  "_id": "ObjectId",
-  "category_name": "MAN_HINH",
-  "default_priority": "TRUNG_BINH",
-  "is_active": true
-}
-```
+| Cột `status` | Nhãn trên giao diện |
+|---|---|
+| `MOI_TIEP_NHAN` | Mới tiếp nhận |
+| `DA_PHAN_LOAI` | Đã phân loại |
+| `DA_XAC_DINH_UU_TIEN` | Đã xác định ưu tiên |
 
-## 4.4. Tickets (nhúng status_log)
+| Cột `priority` | Nhãn trên giao diện |
+|---|---|
+| `CAO` | Cao |
+| `TRUNG_BINH` | Trung bình |
+| `THAP` | Thấp |
 
-```json
-{
-  "_id": "ObjectId",
-  "ticket_code": "BH000987/2026",
-  "customer_id": "ObjectId",
-  "device_id": "ObjectId",
-  "center_id": "ObjectId",
-  "issue_desc": "Man hinh khong len nguon",
-  "category_id": "ObjectId",
-  "priority": "CAO",
-  "status": "MOI",
-  "received_at": "ISODate",
-  "due_date": "ISODate",
-  "closed_at": null,
-  "is_warranty": true,
-  "warranty_verified": false,
-  "status_log": [
-    {
-      "from_status": null,
-      "to_status": "MOI",
-      "changed_at": "ISODate",
-      "changed_by": "NV001"
-    }
-  ]
-}
-```
+## 4.4. API Contract
 
-- `ticket_code`: unique index.
-- `customer_id`: tham chiếu `customers`.
-- `device_id`: tham chiếu `devices`.
-- `category_id`: tham chiếu `issue_categories`, có thể null trước khi phân loại.
-- `due_date`: tính theo QT-04.
-- `warranty_verified`: theo QT-05.
-
-## 4.5. Chỉ mục (Index) và ràng buộc
-
-- `customers.phone` — unique index (QT-01).
-- `devices.serial_no` — unique index (QT-03).
-- `tickets.ticket_code` — unique index.
-- `tickets.customer_id`, `tickets.device_id`, `tickets.category_id` — index thường, đóng vai trò tương đương khóa ngoại (không ràng buộc toàn vẹn tham chiếu ở tầng CSDL như SQL; phải tự kiểm tra ở Service Layer).
-- Không có collection cô lập: mọi collection đều được một collection khác tham chiếu tới (`customers` ← `devices`, `tickets`; `devices` ← `tickets`; `issue_categories` ← `tickets`).
-
-## 4.6. API Contract — đúng thuật ngữ case study
-
-Các thuật ngữ sử dụng: `ticket`, `customer`, `device`, `issue_category`.
+`{id}` trong đường dẫn là `ticket.ticket_id` (BIGINT), không phải chuỗi ObjectId.
 
 | # | Endpoint | Mô tả | Quy tắc áp dụng |
 |---|---|---|---|
 | 1 | `GET /api/customers?phone={sdt}` | Tra cứu khách hàng theo SĐT đã chuẩn hóa | QT-01, QT-02, QT-15 |
-| 2 | `POST /api/tickets` | Ghi nhận phiếu bảo hành mới (tạo/liên kết customer, device, issue_desc) | QT-02, QT-03, QT-05 |
+| 2 | `POST /api/tickets` | Ghi nhận phiếu bảo hành mới (`customer`, `device`, `issue_desc`) | QT-02, QT-03, QT-05 |
 | 3 | `PUT /api/tickets/{id}/phan-loai` | Gán `category_id` và `priority`, tự tính `due_date` | QT-04 |
 | 4 | `PUT /api/tickets/{id}/xac-minh-bao-hanh` | Quản lý phê duyệt khi không xác minh được ngày mua | QT-05 |
 | 5 | `GET /api/tickets/{id}` | Xem chi tiết phiếu | QT-15 |
-| 6 | `GET /api/tickets?status=qua_han` | Danh sách phiếu sắp/đã quá `due_date` | QT-06 |
-| 7 | `GET /api/tickets/{id}/status-log` | Xem lịch sử chuyển trạng thái của phiếu | QT-06 |
-| 8 | `GET /api/bao-cao/theo-nhom-su-co` | Báo cáo số lượng phiếu theo `category_id` | — |
+| 6 | `GET /api/tickets?status=qua_han` | Danh sách phiếu sắp hoặc đã quá `due_date` | QT-06 |
+| 7 | `GET /api/tickets/{id}/status-log` | Đọc bảng `ticket_status_log` của phiếu | QT-06 |
 
 ### Response mẫu — POST /api/tickets
 
 ```json
 {
-  "ticket_id": "671f...",
+  "ticket_id": 987,
   "ticket_code": "BH000987/2026",
-  "status": "MOI",
-  "received_at": "2026-10-09T09:00:00Z",
-  "warranty_verified": false
+  "status": "MOI_TIEP_NHAN",
+  "received_at": "2026-10-18T09:00:00",
+  "is_warranty": true
 }
 ```
 
-## 4.7. Bảng quy tắc Validation
+## 4.5. Bảng quy tắc Validation
 
-| Trường | Bắt buộc | Kiểu | Ràng buộc |
+| Trường | Bắt buộc | Kiểu MySQL | Ràng buộc |
 |---|---|---|---|
-| `phone` | Có | string | 10 số, chuẩn hóa dạng `0xxxxxxxxx` (QT-02) |
-| `issue_desc` | Có | string | 10–500 ký tự |
-| `category_id` | Có khi phân loại | ObjectId ref | Tồn tại trong collection `issue_categories` |
-| `priority` | Có khi phân loại | enum | `CAO` / `TRUNG_BINH` / `THAP` |
-| `serial_no` | Có nếu thiết bị mới | string | Duy nhất trong collection `devices` (QT-03) |
+| `customer.phone` | Có | `VARCHAR(20)` | 10 số, dạng `0xxxxxxxxx`, UNIQUE (QT-01, QT-02) |
+| `ticket.issue_desc` | Có | `TEXT` | 10–500 ký tự |
+| `ticket.category_id` | Có khi phân loại | `INT` | Khóa ngoại tới `issue_category.category_id`, NULL trước khi phân loại |
+| `ticket.priority` | Có khi xác định ưu tiên | `VARCHAR(10)` | `CAO` / `TRUNG_BINH` / `THAP`, NULL trước bước này |
+| `device.serial_no` | Có nếu thiết bị mới | `VARCHAR(50)` | UNIQUE trong bảng `device` (QT-03) |
 
 ---
 
@@ -381,9 +419,9 @@ Ví dụ:
 |---|---|---|---|
 | 1 | Số điện thoại khách hàng | Nhập số điện thoại để tra cứu khách hàng | `customer.phone` |
 | 2 | Họ tên khách hàng | Hiển thị thông tin khách hàng sau khi tra cứu | `customer.full_name` |
-| 3 | Thông tin thiết bị | Chọn/nhập thiết bị của khách hàng | `device` |
+| 3 | Thông tin thiết bị | Chọn/nhập thiết bị của khách hàng | `device.product_name`, `device.serial_no` |
 | 4 | Mô tả sự cố | Nhập nội dung lỗi hoặc vấn đề của thiết bị | `ticket.issue_desc` |
-| 5 | Nhóm sự cố | Phân loại yêu cầu theo nhóm sự cố | `issue_category.category_id` |
+| 5 | Nhóm sự cố | Phân loại yêu cầu theo nhóm sự cố | `ticket.category_id` |
 | 6 | Mức ưu tiên | Chọn mức ưu tiên cho yêu cầu | `ticket.priority` |
 | 7 | Nút Lưu/Tạo yêu cầu | Tạo phiếu bảo hành mới | `ticket` |
 | 8 | Thông báo lỗi | Thông báo khi thiếu dữ liệu hoặc dữ liệu không hợp lệ | UC2 / UC3 / UC4 |
@@ -392,13 +430,13 @@ Ví dụ:
 
 | STT | Thành phần trên màn hình | Ý nghĩa | Dữ liệu liên quan |
 |---|---|---|---|
-| 1 | Mã yêu cầu | Xác định phiếu bảo hành đang xem | `ticket.ticket_id` |
+| 1 | Mã yêu cầu | Mã hiển thị của phiếu bảo hành | `ticket.ticket_code` |
 | 2 | Thông tin khách hàng | Hiển thị khách hàng của yêu cầu | `customer` |
 | 3 | Thông tin thiết bị | Hiển thị thiết bị liên quan | `device` |
 | 4 | Mô tả sự cố | Hiển thị nội dung lỗi đã ghi nhận | `ticket.issue_desc` |
 | 5 | Nhóm sự cố | Hiển thị nhóm sự cố của yêu cầu | `ticket.category_id` |
 | 6 | Mức ưu tiên | Hiển thị mức ưu tiên hiện tại | `ticket.priority` |
-| 7 | Hạn cam kết (SLA) | Hiển thị thời hạn phải hoàn tất yêu cầu | `ticket.sla_due_date` |
+| 7 | Hạn cam kết (SLA) | Hiển thị thời hạn phải hoàn tất yêu cầu | `ticket.due_date` |
 | 8 | Trạng thái hiện tại | Cho biết yêu cầu đang ở trạng thái nào | `ticket.status` |
 | 9 | Lịch sử trạng thái | Hiển thị các lần thay đổi trạng thái | `ticket_status_log` |
 | 10 | Thời gian cập nhật | Hiển thị thời điểm thay đổi trạng thái | `ticket_status_log.changed_at` |
