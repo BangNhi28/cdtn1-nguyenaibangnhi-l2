@@ -1,5 +1,5 @@
 -- Smart CRM – Mekong Mobile | Luồng L2
--- Hệ quản trị: MySQL 8 trên Aiven for MySQL (gói miễn phí)
+-- Hệ quản trị: MySQL 8 trên Aiven for MySQL 
 -- https://aiven.io/free-mysql-database
 -- Engine InnoDB, charset utf8mb4. Kết nối Aiven bắt buộc SSL.
 --
@@ -105,3 +105,4 @@ CREATE TABLE ticket_status_log (
     FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id)
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
