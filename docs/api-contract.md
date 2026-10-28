@@ -228,8 +228,13 @@ Danh sách phiếu. Không có query thì trả mọi phiếu. `qua_han=true` ch
 
 | Trường | Bắt buộc | Kiểu | Ràng buộc |
 |---|---|---|---|
-| `phone` | Có | `VARCHAR(20)` | 10 số, dạng `0xxxxxxxxx`, duy nhất trong `customer` |
+| `phone` | Có | `VARCHAR(20)` | 10 số, dạng `0xxxxxxxxx`, chuẩn hóa QT-02, duy nhất trong `customer` |
+| `full_name` | Có | `VARCHAR(120)` | 2–120 ký tự |
+| `address` | Không | `VARCHAR(255)` | Tối đa 255 ký tự |
+| `product_name` | Có | `VARCHAR(120)` | 2–120 ký tự |
+| `serial_no` | Có | `VARCHAR(50)` | 8–50 ký tự, chữ/số/`-_ .`, chuẩn hóa in hoa, UNIQUE (QT-03); serial thuộc khách khác → 409 |
+| `purchase_date` | Không | `DATE` | Đúng định dạng, không ở tương lai |
+| `warranty_months` | Không | `SMALLINT` | 1–120, mặc định 12 (QT-05) |
 | `issue_desc` | Có | `TEXT` | 10–500 ký tự |
 | `category_id` | Có khi phân loại | `INT` | Khóa ngoại tới `issue_category.category_id`; NULL trước khi phân loại |
 | `priority` | Có khi xác định ưu tiên | `VARCHAR(10)` | `CAO`, `TRUNG_BINH` hoặc `THAP`; NULL trước bước này |
-| `serial_no` | Có nếu thiết bị mới | `VARCHAR(50)` | Duy nhất trong `device` |
