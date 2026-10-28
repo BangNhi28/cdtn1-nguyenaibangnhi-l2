@@ -1,14 +1,16 @@
-
 # BẢNG KHAI BÁO SỬ DỤNG CÔNG CỤ AI
 
-Tài liệu này ghi nhận các công cụ AI được sử dụng để hỗ trợ thực hiện bài tập BT1 — SMART CRM – Mekong Mobile, phân hệ L2: Tiếp nhận và xử lý yêu cầu bảo hành.
+Cập nhật cho Bài tập 2 — hiện thực module cốt lõi L2.
 
-| Công cụ | Dùng vào việc gì | Áp dụng ở phần nào | Đã kiểm chứng thế nào |
+| Công cụ | Dùng vào việc gì | Áp dụng ở tệp / hàm nào | Em đã kiểm chứng thế nào |
 |---|---|---|---|
-| Claude (Anthropic) | Hỗ trợ soạn khung SRS, bảng truy vết, sơ đồ Use Case, kiến trúc, ERD nháp và gợi ý API Contract. | Mục 1–6 SRS; Thành phần 2, 3, 4, 5. | Tự đọc lại toàn bộ, đối chiếu bối cảnh case study và phạm vi đã duyệt; kiểm tra bảng truy vết và tự chỉnh sơ đồ theo quy ước đã học. |
-| ChatGPT (OpenAI) | Hỗ trợ soạn và rà soát SRS, bảng truy vết, mô hình kiến trúc, ERD, API Contract và wireframe; gợi ý cách trình bày tài liệu Markdown. | Mục 1–6 SRS; tập trung Mục 3 (kiến trúc), Mục 4 (mô hình dữ liệu), Mục 5 (wireframe) và tài liệu repository. | Tự kiểm tra nội dung được gợi ý, đối chiếu yêu cầu đề bài và các phần trong tài liệu; tự quyết định, chỉnh sửa và chịu trách nhiệm về nội dung cuối cùng. |
-| Figma AI | Hỗ trợ gợi ý bố cục giao diện và tham khảo thiết kế wireframe. | Mục 5 — Wireframe giao diện. | Tự xem lại và điều chỉnh bố cục, trường dữ liệu để phù hợp với yêu cầu đề bài. |
-| Stitch | Hỗ trợ tạo mẫu giao diện và gợi ý cách sắp xếp các thành phần trên màn hình tiếp nhận, tạo mới và xem chi tiết phiếu bảo hành. | Mục 5 — Wireframe giao diện. | Tự rà soát mẫu giao diện, đối chiếu yêu cầu nghiệp vụ và chỉnh sửa trước khi đưa vào báo cáo. |
-| Cursor Agents | Hỗ trợ đối chiếu đề bài, case study và phản hồi giảng viên; chỉnh sửa SRS, schema.sql và bảng truy vết để thống nhất với ERD MySQL. | Mục 1, Mục 4, phụ lục; `docs/srs.md`, `docs/schema.sql`, `docs/thay-doi-thiet-ke.md`. | Tự đọc lại bản Word, đối chiếu nội dung với ERD và `docs/schema.sql`; tự quyết định nội dung giữ lại, chỉnh sửa và chịu trách nhiệm về kết quả cuối cùng. |
+| Cursor | Gợi ý khung Express 3 lớp, SQLite schema, ba kiểm thử và ba màn hình. | `src/services/ticket.service.js`, `src/utils/warranty.js`, `src/utils/sla.js`, `tests/*`, `public/js/api.js` | Đọc từng hàm; đối chiếu QT-04, QT-05 với case study; chạy `npm test`; gọi tạo phiếu thiếu `issue_desc` phải ra 400. |
+| Claude (Anthropic) | BT1: khung SRS, bảng truy vết, sơ đồ nháp. | `docs/srs.md` | Đối chiếu case study và phạm vi L2. |
+| ChatGPT (OpenAI) | BT1: rà soát SRS, ERD, API. | `docs/srs.md`, `docs/schema.sql` | Tự chỉnh tên cột `due_date`, `ticket_code`. |
+| Figma AI | BT1: gợi ý bố cục wireframe. | Mục 5 SRS | Tự chỉnh trường cho khớp ERD. |
+| Stitch | BT1: mẫu màn hình. | Mục 5 SRS | Tự rà soát nghiệp vụ trước khi đưa vào báo cáo. |
 
-
+Tôi xác nhận đã đọc, hiểu và chịu trách nhiệm về toàn bộ nội dung nộp.  
+Họ tên: Nguyễn Ái Băng Nhi  
+MSSV: 2374802010368  
+Ngày: 28/10/2026
