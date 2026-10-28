@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phiếu bảo hành — Mekong Care</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <script src="/js/icons.js"></script>
+  <script src="/js/connection-fault.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    requireLogin();
+
+    mountAppShell("list",
+      '<div class="page-heading split">' +
+      '<div><div class="eyebrow">TRUNG TÂM BẢO HÀNH</div>' +
+      '<h1>Phiếu bảo hành</h1><p id="pageSubtitle">Theo dõi, phân loại và kiểm soát hạn cam kết.</p></div>' +
+      '<a class="button button-primary" data-staff-only href="/ticket-new.html"><span data-icon="plus"></span> Tạo phiếu mới</a></div>' +
+      '<section class="metrics-grid" id="metrics">' +
+      '<div class="metric-card"><div><span class="metric-label">Tổng phiếu hôm nay</span><strong class="metric-value" id="mTotal">—</strong><small class="metric-note" id="mTotalNote">—</small></div><span class="metric-icon" data-icon="document" data-icon-size="20"></span></div>' +
+      '<div class="metric-card"><div><span class="metric-label">Đang xử lý</span><strong class="metric-value" id="mProcessing">—</strong><small class="metric-note" id="mProcessingNote">—</small></div><span class="metric-icon" data-icon="clock" data-icon-size="20"></span></div>' +
+      '<div class="metric-card warning"><div><span class="metric-label">Sắp đến hạn</span><strong class="metric-value" id="mSoon">—</strong><small class="metric-note" id="mSoonNote">—</small></div><span class="metric-icon" data-icon="alert" data-icon-size="20"></span></div>' +
+      '<div class="metric-card danger"><div><span class="metric-label">Quá hạn</span><strong class="metric-value" id="mOver">—</strong><small class="metric-note" id="mOverNote">—</small></div><span class="metric-icon" data-icon="alert" data-icon-size="20"></span></div></section>' +
+      '<section class="panel table-panel">' +
+      '<div class="panel-toolbar">' +
+      '<div class="tabs"><button type="button" class="active" id="tabAll">Tất cả</button>' +
+      '<button type="button" id="tabSoon">Sắp đến hạn</button>' +
+      '<button type="button" id="tabOver">Quá hạn</button></div>' +
+      '<div class="filter-row">' +
+      '<label class="search-box"><span data-icon="search" data-icon-size="17"></span>' +
+      '<input id="search" placeholder="Tìm mã phiếu, khách hàng..."></label>' +
+      '<button type="button" class="button button-secondary" id="reload"><span data-icon="filter" data-icon-size="17"></span> Tải lại</button></div></div>' +
+      '<div id="loading" class="state-banner loading">Đang tải danh sách phiếu...</div>' +
+      '<div id="error" class="state-banner error hidden"><span id="errorText"></span><button type="button" class="button button-secondary" id="retry">Thử lại</button></div>' +
+      '<div id="empty" class="state-banner empty hidden"></div>' +
+      '<div class="table-scroll hidden" id="tableWrap"><table><thead><tr>' +
+      '<th>Mã phiếu</th><th>Khách hàng</th><th>Thiết bị & sự cố</th><th>Ưu tiên</th><th>Hạn cam kết</th><th>Trạng thái</th><th></th>' +
+      '</tr></thead><tbody id="tbody"></tbody></table></div>' +
+      '<div class="table-footer hidden" id="tableFoot"><span id="footText"></span></div></section>'
+    );
+
+    let allRows = [];
+    let listFilter = "all";
+
+    function setListFilter(next) {
+      listFilter = next;
+      document.getElementById("tabAll").classList.toggle("active", next === "all");
+      document.getElementById("tabSoon").classList.toggle("active", next === "soon");
+      document.getElementById("tabOver").classList.toggle("active", next === "overdue");
+    }
+
+    function dueToneForRow(row) {
+      return dueTone(row.due_date, null, row.status);
+    }
+
+    function receivedDateKey(value) {
+      return String(value || "").slice(0, 10);
+    }
+
+    function isReceivedOnDay(value, dayOffset) {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + dayOffset);
+      const key =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+      return receivedDateKey(value) === key;
+    }
+
+    function filterRows() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      return allRows.filter(function (row) {
+        if (listFilter === "soon" && dueToneForRow(row) !== "warning") {
+          return false;
+        }
+        if (listFilter === "overdue" && dueToneForRow(row) !== "danger") {
+          return false;
+        }
+        const hay = (row.ticket_code + " " + row.full_name + " " + row.product_name).toLowerCase();
+        return !q || hay.indexOf(q) >= 0;
+      });
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = rows.map(function (row) {
+        const tone = dueTone(row.due_date, null, row.status);
+        return "<tr>" +
+          '<td><a class="ticket-link" href="/ticket-detail.html?id=' + row.ticket_id + '">' + row.ticket_code + "</a></td>" +
+          "<td><strong>" + (row.full_name || "") + "</strong></td>" +
+          "<td><strong>" + (row.product_name || "") + "</strong><small>" + (row.category_name || "—") + "</small></td>" +
+          "<td>" + priorityPill(row.priority) + "</td>" +
+          '<td><span class="due-date ' + tone + '">' + icon("clock", 15) + " " + (row.due_date || "—") + "</span></td>" +
+          "<td>" + statusPill(row.status) + "</td>" +
+          '<td><a class="icon-button" href="/ticket-detail.html?id=' + row.ticket_id + '" aria-label="Xem">' + icon("eye", 18) + "</a></td></tr>";
+      }).join("");
+      document.getElementById("footText").textContent = "Hiển thị " + rows.length + " / " + allRows.length + " phiếu";
+    }
+
+    function updateMetrics() {
+      const rows = allRows;
+      const processingCount = rows.length;
+      const soonCount = rows.filter(function (r) {
+        return dueToneForRow(r) === "warning";
+      }).length;
+      const overCount = rows.filter(function (r) {
+        return dueToneForRow(r) === "danger";
+      }).length;
+      const todayRecv = rows.filter(function (r) {
+        return isReceivedOnDay(r.received_at, 0);
+      }).length;
+      const yestRecv = rows.filter(function (r) {
+        return isReceivedOnDay(r.received_at, -1);
+      }).length;
+      const delta = todayRecv - yestRecv;
+
+      document.getElementById("mTotal").textContent = String(todayRecv);
+      document.getElementById("mProcessing").textContent = String(processingCount);
+      document.getElementById("mSoon").textContent = String(soonCount);
+      document.getElementById("mOver").textContent = String(overCount);
+
+      let totalNote = "Đang hoạt động";
+      if (todayRecv || yestRecv) {
+        if (delta > 0) {
+          totalNote = "+" + delta + " so với hôm qua";
+        } else if (delta < 0) {
+          totalNote = String(delta) + " so với hôm qua";
+        } else {
+          totalNote = "Bằng hôm qua";
+        }
+      }
+      document.getElementById("mTotalNote").textContent = totalNote;
+
+      document.getElementById("mProcessingNote").textContent =
+        todayRecv > 0
+          ? todayRecv + " phiếu mới tiếp nhận hôm nay"
+          : "Không có phiếu mới tiếp nhận hôm nay";
+
+      document.getElementById("mSoonNote").textContent =
+        soonCount > 0 ? soonCount + " phiếu trong 24 giờ tới" : "Trong 24 giờ tới";
+
+      document.getElementById("mOverNote").textContent =
+        overCount > 0 ? "Cần xử lý ngay" : "Không có phiếu quá hạn";
+    }
+
+    async function load() {
+      const loading = document.getElementById("loading");
+      const error = document.getElementById("error");
+      const empty = document.getElementById("empty");
+      const tableWrap = document.getElementById("tableWrap");
+      const tableFoot = document.getElementById("tableFoot");
+      loading.classList.remove("hidden");
+      error.classList.add("hidden");
+      empty.classList.add("hidden");
+      tableWrap.classList.add("hidden");
+      tableFoot.classList.add("hidden");
+      try {
+        const fullResult = await Api.tickets(false);
+        allRows = fullResult.data || [];
+        loading.classList.add("hidden");
+        if (typeof hideConnectionFault === "function") {
+          hideConnectionFault();
+        }
+        updateMetrics();
+        const rows = filterRows();
+        if (!allRows.length) {
+          empty.textContent = "Chưa có phiếu nào.";
+          empty.classList.remove("hidden");
+          return;
+        }
+        if (!rows.length) {
+          empty.textContent = "Bộ lọc không ra kết quả.";
+          empty.classList.remove("hidden");
+          return;
+        }
+        renderTable(rows);
+        tableWrap.classList.remove("hidden");
+        tableFoot.classList.remove("hidden");
+      } catch (err) {
+        loading.classList.add("hidden");
+        if (typeof connectionFaultFromError === "function" && connectionFaultFromError(err, { onRetry: load })) {
+          return;
+        }
+        document.getElementById("errorText").textContent = err.message;
+        error.classList.remove("hidden");
+      }
+    }
+
+    document.getElementById("reload").onclick = load;
+    document.getElementById("retry").onclick = load;
+    function applyListFilter() {
+      const rows = filterRows();
+      const empty = document.getElementById("empty");
+      const tableWrap = document.getElementById("tableWrap");
+      const tableFoot = document.getElementById("tableFoot");
+      if (!allRows.length) {
+        return;
+      }
+      if (!rows.length) {
+        empty.textContent = "Bộ lọc không ra kết quả.";
+        empty.classList.remove("hidden");
+        tableWrap.classList.add("hidden");
+        tableFoot.classList.add("hidden");
+        return;
+      }
+      empty.classList.add("hidden");
+      renderTable(rows);
+      tableWrap.classList.remove("hidden");
+      tableFoot.classList.remove("hidden");
+    }
+
+    document.getElementById("search").oninput = applyListFilter;
+    document.getElementById("tabAll").onclick = function () {
+      setListFilter("all");
+      applyListFilter();
+    };
+    document.getElementById("tabSoon").onclick = function () {
+      setListFilter("soon");
+      applyListFilter();
+    };
+    document.getElementById("tabOver").onclick = function () {
+      setListFilter("overdue");
+      applyListFilter();
+    };
+    if (isManager()) {
+      document.getElementById("pageSubtitle").textContent =
+        "Theo dõi danh sách phiếu bảo hành và trạng thái xử lý tại trung tâm.";
+    } else {
+      document.getElementById("pageSubtitle").textContent =
+        "Tra cứu, tiếp nhận và phân loại phiếu.";
+    }
+    load();
+  </script>
+</body>
+</html>

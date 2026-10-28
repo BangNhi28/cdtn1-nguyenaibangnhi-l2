@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  <title>Tạo phiếu — Mekong Care</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <script src="/js/icons.js"></script>
+  <script src="/js/connection-fault.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/fieldRules.js"></script>
+  <script src="/js/ticket-new.js"></script>
+  <script>
+    requireStaffPage();
+    mountAppShell("create",
+      '<a class="back-link" href="/tickets.html"><span data-icon="arrowLeft"></span> Quay lại danh sách</a>' +
+      '<div class="page-heading create-heading"><div><div class="eyebrow">TIẾP NHẬN YÊU CẦU</div>' +
+      '<h1>Tạo phiếu bảo hành mới</h1><p>Thông tin có dấu <b>*</b> là bắt buộc. Mã phiếu sẽ được hệ thống tự động sinh.</p></div>' +
+      '<div class="draft-chip" id="statusChip"><span id="statusChipDot"></span><div><small id="statusChipCaption">Phiếu trên hệ thống</small><strong id="statusChipLabel">Chưa tạo</strong></div></div></div>' +
+      '<div id="loading" class="state-banner loading form-alert-top hidden">Đang tạo phiếu...</div>' +
+      '<div id="error" class="state-banner error form-alert-top hidden" role="alert"><span id="errorText"></span></div>' +
+      '<div class="create-layout">' +
+      '<form class="form-stack" id="ticketWizardForm" autocomplete="off" novalidate>' +
+      '<div class="autofill-trap" aria-hidden="true">' +
+      '<input type="text" tabindex="-1" autocomplete="username">' +
+      '<input type="password" tabindex="-1" autocomplete="current-password">' +
+      '<input type="text" tabindex="-1" autocomplete="name">' +
+      '<input type="text" tabindex="-1" autocomplete="street-address">' +
+      '<input type="tel" tabindex="-1" autocomplete="tel">' +
+      '</div>' +
+
+      '<div id="step1" class="wizard-step">' +
+      '<section class="panel form-section"><div class="section-title"><span>1</span><div><h2>Thông tin khách hàng</h2>' +
+      '<p>Tra cứu bằng số điện thoại để tránh trùng hồ sơ.</p></div></div>' +
+      '<div class="lookup-row"><label class="field"><span>Số điện thoại <b>*</b></span>' +
+      '<div class="input-with-icon"><span class="input-icon" data-icon="phone"></span><input id="phone" type="text" inputmode="numeric" placeholder="Ví dụ: 0909 123 456" autocomplete="one-time-code" autocorrect="off" autocapitalize="off" spellcheck="false"></div>' +
+      '<small>Tự động chuẩn hóa về 10 chữ số, bắt đầu bằng 0</small></label>' +
+      '<button type="button" class="button button-secondary" id="lookup"><span data-icon="search"></span> Tra cứu</button></div>' +
+      '<p id="lookupMsg" class="field" style="color:var(--muted);font-weight:400"></p>' +
+      '<div id="foundCard" class="found-card hidden"><span class="found-avatar" id="foundAvatar">KH</span><div><small>ĐÃ TÌM THẤY KHÁCH HÀNG</small>' +
+      '<strong id="foundName"></strong><p id="foundPhone"></p></div></div>' +
+      '<div id="deviceList" class="device-pick-list hidden"></div>' +
+      '<div id="customerManualFields" class="hidden">' +
+      '<div class="field field-no-autofill"><span>Họ tên <b>*</b></span><input id="full_name" maxlength="120" type="text" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"><small>2–120 ký tự</small></div>' +
+      '<div class="field field-no-autofill"><span>Địa chỉ</span><input id="address" maxlength="255" type="text" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"><small>Tối đa 255 ký tự</small></div>' +
+      '</div>' +
+      '<div id="step1Actions" class="step-actions hidden"><button type="button" class="button button-primary" id="btnContinue">Tiếp tục →</button></div>' +
+      '</section></div>' +
+
+      '<div id="step2" class="wizard-step hidden">' +
+      '<button type="button" class="back-link" id="btnBackStep2"><span data-icon="arrowLeft"></span> Quay lại bước 1</button>' +
+      '<section class="panel form-section"><div class="section-title"><span>2</span><div><h2>Thiết bị tiếp nhận</h2>' +
+      '<p>Serial hoặc IMEI là duy nhất cho mỗi thiết bị.</p></div></div>' +
+      '<div class="form-grid">' +
+      '<label class="field"><span>Số serial / IMEI <b>*</b></span><input id="serial_no" maxlength="50" autocomplete="off"><p id="serialMsg" class="field-inline-error hidden"></p></label>' +
+      '<label class="field"><span>Tên thiết bị <b>*</b></span><input id="product_name" maxlength="120" type="text" autocomplete="off"><p id="productMsg" class="field-inline-error hidden"></p></label>' +
+      '<label class="field"><span>Ngày mua</span><div class="input-with-icon"><span class="input-icon" data-icon="calendar"></span><input id="purchase_date" type="date" autocomplete="off"></div></label>' +
+      '<label class="field"><span>Nơi mua</span><select id="purchase_place" autocomplete="off">' +
+      '<option value="">Chọn nơi mua</option>' +
+      '<option value="Mekong Mobile Quận 10">Mekong Mobile Quận 10</option>' +
+      '<option value="Mekong Mobile Cần Thơ">Mekong Mobile Cần Thơ</option>' +
+      '<option value="Mekong Mobile Hà Nội">Mekong Mobile Hà Nội</option>' +
+      '<option value="Cửa hàng đối tác">Cửa hàng đối tác</option>' +
+      '<option value="Khác">Khác</option></select></label>' +
+      '<input type="hidden" id="warranty_months" value="12"></div>' +
+      '<div id="warrantyBanner" class="warranty-banner hidden"></div></section>' +
+      '<section class="panel form-section"><div class="section-title"><span>3</span><div><h2>Phân loại sự cố</h2>' +
+      '<p>Chọn nhóm sự cố và mức ưu tiên phù hợp.</p></div></div>' +
+      '<label class="field"><span>Mô tả lỗi theo lời khách <b>*</b></span><textarea id="issue_desc" rows="4" maxlength="500" autocomplete="off" autocorrect="off" spellcheck="false"></textarea><p id="issueDescMsg" class="field-inline-error hidden"></p></label>' +
+      '<div class="form-grid classification-grid">' +
+      '<label class="field"><span>Nhóm sự cố <b>*</b></span><select id="category_id"><option value="" selected>Chọn nhóm sự cố</option></select></label>' +
+      '<label class="field"><span>Mức ưu tiên <b>*</b></span><div class="segmented-control">' +
+      '<button type="button" class="segment-priority" data-priority="CAO"><span class="priority-dot red"></span> Cao</button>' +
+      '<button type="button" class="segment-priority" data-priority="TRUNG_BINH"><span class="priority-dot amber"></span> Trung bình</button>' +
+      '<button type="button" class="segment-priority" data-priority="THAP"><span class="priority-dot green"></span> Thấp</button>' +
+      '</div></label></div>' +
+      '<p id="step2FormMsg" class="form-validation-msg hidden"></p>' +
+      '</section></div>' +
+
+      '</form>' +
+      '<aside class="summary-column">' +
+      '<section class="panel summary-card"><div class="summary-title"><span data-icon="clock"></span><div><small>HẠN CAM KẾT DỰ KIẾN</small>' +
+      '<strong id="summaryDue">—</strong></div></div>' +
+      '<div class="sla-line"><span>Mức ưu tiên</span><span id="summaryPriority"></span></div>' +
+      '<div class="sla-line"><span>Thời gian xử lý</span><strong id="summaryHours">—</strong></div>' +
+      '<p class="summary-note"><span data-icon="info" data-icon-size="16"></span> Chỉ tính ngày làm việc từ thứ Hai đến thứ Bảy.</p></section>' +
+      '<section class="panel checklist-card"><h3>Kiểm tra trước khi tạo</h3>' +
+      '<div id="chkCustomer"><span></span> Khách hàng đã được xác minh</div>' +
+      '<div id="chkSerial"><span></span> Serial thiết bị hợp lệ</div>' +
+      '<div id="chkCategory"><span></span> Đã chọn nhóm sự cố</div>' +
+      '<div id="chkDue"><span></span> Đã chọn mức ưu tiên</div></section>' +
+      '<div class="summary-actions"><a class="button button-secondary" href="/tickets.html">Hủy</a>' +
+      '<button type="button" class="button button-primary" id="save"><span data-icon="document" data-icon-size="17"></span> Tạo phiếu</button></div></aside></div>'
+    );
+    initTicketNewWizard();
+  </script>
+</body>
+</html>

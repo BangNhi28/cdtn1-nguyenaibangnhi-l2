@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết phiếu — Mekong Care</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <script src="/js/icons.js"></script>
+  <script src="/js/connection-fault.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    requireLogin();
+    const ticketId = new URLSearchParams(location.search).get("id");
+
+    mountAppShell("list",
+      '<a class="back-link" href="/tickets.html"><span data-icon="arrowLeft"></span> Quay lại danh sách</a>' +
+      '<div id="loading" class="state-banner loading">Đang tải chi tiết phiếu...</div>' +
+      '<div id="error" class="state-banner error hidden"><span id="errorText"></span><button type="button" class="button button-secondary" id="retry">Thử lại</button></div>' +
+      '<div id="empty" class="state-banner empty hidden">Không tìm thấy phiếu.</div>' +
+      '<div id="content" class="hidden">' +
+      '<div class="page-heading split detail-heading"><div><div class="detail-code-row"><h1 id="ticket_code"></h1><span id="statusPill"></span></div>' +
+      '<p id="receivedLine"></p></div></div>' +
+      '<div class="sla-alert hidden" id="slaAlert" role="alert">' +
+      '<span class="sla-alert-icon" data-icon="clock" data-icon-size="20"></span>' +
+      '<div class="sla-alert-body"><strong id="slaTitle"></strong><p id="slaSub"></p></div>' +
+      '<span class="sla-alert-badge" id="slaBadge"></span></div>' +
+      '<div class="detail-layout"><div class="detail-main">' +
+      '<section class="panel detail-section"><div class="detail-section-head"><div><span data-icon="user"></span><h2>Khách hàng & thiết bị</h2></div></div>' +
+      '<div class="customer-device-grid"><div class="identity-card"><span class="large-avatar" id="custAvatar">KH</span><div><small>KHÁCH HÀNG</small><strong id="full_name"></strong></div></div>' +
+      '<div class="info-grid">' +
+      '<div class="info-item"><span data-icon="phone"></span><div><small>Số điện thoại</small><strong id="phone"></strong></div></div>' +
+      '<div class="info-item"><span data-icon="grid"></span><div><small>Thiết bị</small><strong id="product_name"></strong></div></div>' +
+      '<div class="info-item"><div><small>Serial / IMEI</small><strong id="serial_no"></strong></div></div>' +
+      '<div class="info-item"><span data-icon="calendar"></span><div><small>Ngày mua</small><strong id="purchase_date"></strong></div></div>' +
+      '<div class="info-item"><span data-icon="shield"></span><div><small>Bảo hành</small><strong id="is_warranty"></strong></div></div>' +
+      '<div class="info-item"><div><small>Hạn cam kết</small><strong id="due_date"></strong></div></div></div></div></section>' +
+      '<section class="panel detail-section issue-section"><div class="detail-section-head"><div><span data-icon="tag"></span><h2>Thông tin sự cố</h2></div></div>' +
+      '<div class="issue-meta"><div><small>NHÓM SỰ CỐ</small><span id="categoryPill"></span></div>' +
+      '<div><small>MỨC ƯU TIÊN</small><span id="priorityPill"></span></div>' +
+      '<div><small>TRẠNG THÁI</small><strong id="statusText"></strong></div></div>' +
+      '<div class="description-box"><small>MÔ TẢ LỖI</small><p id="issue_desc"></p></div></section></div>' +
+      '<aside class="detail-side"><section class="panel timeline-card"><div class="detail-section-head"><div><span data-icon="history"></span><h2 id="timelineTitle">Lịch sử trạng thái</h2></div></div>' +
+      '<p class="field hidden" data-manager-only id="timelineHint" style="margin:-8px 0 12px;font-weight:400;color:var(--muted)">Theo dõi tiến trình xử lý từng phiếu.</p>' +
+      '<div class="timeline" id="timeline"></div></section></aside></div></div>'
+    );
+
+    async function load() {
+      document.getElementById("loading").classList.remove("hidden");
+      document.getElementById("error").classList.add("hidden");
+      document.getElementById("empty").classList.add("hidden");
+      document.getElementById("content").classList.add("hidden");
+      if (!ticketId) {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("empty").classList.remove("hidden");
+        return;
+      }
+      try {
+        const ticket = await Api.ticket(ticketId);
+        const log = await Api.statusLog(ticketId);
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("ticket_code").textContent = ticket.ticket_code;
+        document.getElementById("statusPill").innerHTML = statusPill(ticket.status);
+        document.getElementById("receivedLine").textContent = "Tiếp nhận lúc " + (ticket.received_at || "—");
+        document.getElementById("full_name").textContent = ticket.full_name;
+        document.getElementById("custAvatar").textContent = initialsFromName(ticket.full_name);
+        document.getElementById("phone").textContent = ticket.phone;
+        document.getElementById("product_name").textContent = ticket.product_name;
+        document.getElementById("serial_no").textContent = ticket.serial_no;
+        document.getElementById("purchase_date").textContent = ticket.purchase_date || "—";
+        document.getElementById("due_date").textContent = ticket.due_date || "Chưa xác định";
+        let warrantyLabel = "Còn bảo hành";
+        if (!ticket.is_warranty) {
+          warrantyLabel = ticket.purchase_date ? "Hết hạn bảo hành" : "Chưa xác định ngày mua";
+        }
+        document.getElementById("is_warranty").textContent = warrantyLabel;
+        document.getElementById("issue_desc").textContent = ticket.issue_desc;
+        document.getElementById("statusText").textContent = STATUS_LABELS[ticket.status] || ticket.status;
+        document.getElementById("categoryPill").innerHTML = ticket.category_name
+          ? '<span class="status-pill purple">' + ticket.category_name + "</span>"
+          : '<span class="status-pill neutral">Chưa phân loại</span>';
+        document.getElementById("priorityPill").innerHTML = priorityPill(ticket.priority);
+        applySlaBanner(ticket, {
+          element: document.getElementById("slaAlert"),
+          titleEl: document.getElementById("slaTitle"),
+          subEl: document.getElementById("slaSub"),
+          badgeEl: document.getElementById("slaBadge")
+        });
+        document.querySelectorAll("#slaAlert [data-icon]").forEach(function (el) {
+          el.innerHTML = icon(el.getAttribute("data-icon"), Number(el.getAttribute("data-icon-size") || 20));
+        });
+        const manager = isManager();
+        if (manager) {
+          document.getElementById("timelineTitle").textContent = "Lịch sử thay đổi trạng thái";
+        }
+        document.getElementById("timeline").innerHTML = log.data.map(function (row, i) {
+          const fromLabel = row.from_status ? statusLabel(row.from_status) : "";
+          const toLabel = statusLabel(row.to_status);
+          return '<div class="timeline-item' + (i === 0 ? " active" : "") + '"><span data-icon="document" data-icon-size="14"></span><div>' +
+            "<strong>" + toLabel + "</strong><p>" + (fromLabel ? "Từ " + fromLabel : "Khởi tạo phiếu") + "</p>" +
+            "<small>" + row.changed_at + " · NV #" + row.changed_by + "</small></div></div>";
+        }).join("");
+        applyRoleUi();
+        document.querySelectorAll("#timeline [data-icon]").forEach(function (el) {
+          el.innerHTML = icon(el.getAttribute("data-icon"), Number(el.getAttribute("data-icon-size") || 14));
+        });
+        if (typeof hideConnectionFault === "function") {
+          hideConnectionFault();
+        }
+        document.getElementById("content").classList.remove("hidden");
+      } catch (err) {
+        document.getElementById("loading").classList.add("hidden");
+        if (err.status === 404) {
+          document.getElementById("empty").classList.remove("hidden");
+        } else if (
+          typeof connectionFaultFromError === "function" &&
+          connectionFaultFromError(err, { onRetry: load })
+        ) {
+          return;
+        } else {
+          document.getElementById("errorText").textContent = err.message;
+          document.getElementById("error").classList.remove("hidden");
+        }
+      }
+    }
+
+    document.getElementById("retry").onclick = load;
+    load();
+  </script>
+</body>
+</html>

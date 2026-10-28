@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập — Mekong Care</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="login-body">
+  <main class="login-page">
+    <section class="login-brand-panel">
+      <div class="login-brand-content">
+        <div class="login-logo">
+          <span class="brand-mark" data-icon="shield" data-icon-size="25"></span>
+          <span class="brand-text login-brand-text"><strong>MEKONG</strong><small>CARE</small></span>
+        </div>
+        <div class="login-message">
+          <span class="login-kicker">SMART SERVICE CENTER</span>
+          <h1>Chăm sóc trọn vẹn.<br>Vận hành liền mạch.</h1>
+          <p>Không gian làm việc tập trung giúp đội ngũ tiếp nhận và xử lý mọi yêu cầu bảo hành chính xác, đúng hạn.</p>
+        </div>
+        <div class="login-feature-list">
+          <div>
+            <span class="login-feature-icon" data-icon="search" data-icon-size="17"></span>
+            <p><strong>Tra cứu tức thì</strong><small>Thông tin khách hàng và thiết bị trong một nơi</small></p>
+          </div>
+          <div>
+            <span class="login-feature-icon" data-icon="clock" data-icon-size="17"></span>
+            <p><strong>Kiểm soát cam kết</strong><small>Theo dõi SLA chủ động, hạn chế phiếu quá hạn</small></p>
+          </div>
+          <div>
+            <span class="login-feature-icon" data-icon="shield" data-icon-size="17"></span>
+            <p><strong>Dữ liệu minh bạch</strong><small>Mọi thay đổi đều được ghi nhận xuyên suốt</small></p>
+          </div>
+        </div>
+      </div>
+      <div class="login-brand-footer">
+        <span>MEKONG MOBILE</span>
+        <small>Hệ thống quản lý bảo hành nội bộ · Phiên bản 2.6</small>
+      </div>
+    </section>
+
+    <section class="login-form-panel">
+      <div class="login-form-wrap">
+        <div class="login-mobile-logo">
+          <span class="brand-mark" data-icon="shield" data-icon-size="22"></span>
+          <span>MEKONG <b>CARE</b></span>
+        </div>
+
+        <div class="login-form-heading">
+          <span>CHÀO MỪNG TRỞ LẠI</span>
+          <h2>Đăng nhập hệ thống</h2>
+          <p>Sử dụng tài khoản nhân viên Mekong Mobile để tiếp tục.</p>
+          <p class="login-demo-hint">Nhân viên tiếp nhận: <b>nv1</b> / <b>123456</b> · Quản lý trung tâm: <b>ql1</b> hoặc <b>ql2</b> / <b>123456</b></p>
+        </div>
+
+        <form id="loginForm">
+          <label class="field login-field">
+            <span>Mã nhân viên <b>*</b></span>
+            <div class="login-input">
+              <span class="login-input-icon" data-icon="user" data-icon-size="17"></span>
+              <input id="username" name="username" autocomplete="username" value="nv1" placeholder="Ví dụ: NV0128">
+            </div>
+          </label>
+
+          <label class="field login-field">
+            <span>Mật khẩu <b>*</b></span>
+            <div class="login-input">
+              <span class="login-input-icon" data-icon="shield" data-icon-size="17"></span>
+              <input id="password" name="password" type="password" autocomplete="current-password" value="123456" placeholder="Nhập mật khẩu">
+              <button type="button" class="password-toggle" id="togglePwd" aria-label="Hiện mật khẩu">
+                <span data-icon="eye" data-icon-size="17"></span>
+              </button>
+            </div>
+          </label>
+
+          <div class="login-options">
+            <label class="remember-option">
+              <input type="checkbox" id="remember" checked>
+              <span data-icon="check" data-icon-size="12"></span>
+              Ghi nhớ đăng nhập
+            </label>
+            <button type="button" class="login-forgot">Quên mật khẩu?</button>
+          </div>
+
+          <div id="error" class="login-error hidden" role="alert"></div>
+
+          <button type="submit" class="button button-primary login-submit">
+            <span>Đăng nhập</span>
+            <span class="login-arrow" aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div class="login-help">
+          <span class="login-help-icon" data-icon="headset" data-icon-size="17"></span>
+          <p>
+            Không thể đăng nhập?
+            <small>Liên hệ IT nội bộ qua máy lẻ 190 hoặc it@mekongmobile.vn</small>
+          </p>
+        </div>
+      </div>
+
+      <div class="login-form-footer">
+        <span>© 2026 Mekong Mobile</span>
+        <div>
+          <button type="button">Điều khoản sử dụng</button>
+          <button type="button">Bảo mật</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/js/icons.js"></script>
+  <script src="/js/connection-fault.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    document.querySelectorAll("[data-icon]").forEach(function (el) {
+      el.innerHTML = icon(el.getAttribute("data-icon"), Number(el.getAttribute("data-icon-size") || 18));
+    });
+
+    document.getElementById("togglePwd").onclick = function () {
+      const input = document.getElementById("password");
+      input.type = input.type === "password" ? "text" : "password";
+    };
+
+    document.getElementById("loginForm").onsubmit = async function (e) {
+      e.preventDefault();
+      const errorBox = document.getElementById("error");
+      errorBox.classList.add("hidden");
+      errorBox.textContent = "";
+      try {
+        const data = await Api.login(
+          document.getElementById("username").value.trim(),
+          document.getElementById("password").value
+        );
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data));
+        if (document.getElementById("remember").checked) {
+          localStorage.setItem("rememberLogin", "1");
+        } else {
+          localStorage.removeItem("rememberLogin");
+        }
+        window.location.href = "/tickets.html";
+      } catch (err) {
+        if (
+          typeof connectionFaultFromError === "function" &&
+          connectionFaultFromError(err, {
+            onRetry: function () {
+              if (typeof hideConnectionFault === "function") {
+                hideConnectionFault();
+              }
+            }
+          })
+        ) {
+          return;
+        }
+        errorBox.innerHTML = icon("alert", 15) + "<span>" + err.message + "</span>";
+        errorBox.classList.remove("hidden");
+      }
+    };
+  </script>
+</body>
+</html>
