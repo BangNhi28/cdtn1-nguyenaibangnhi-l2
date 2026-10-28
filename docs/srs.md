@@ -368,7 +368,12 @@ CREATE TABLE ticket_status_log (
 | `ticket.issue_desc` | Có | `TEXT` | 10–500 ký tự |
 | `ticket.category_id` | Có khi phân loại | `INT` | Khóa ngoại tới `issue_category.category_id`, NULL trước khi phân loại |
 | `ticket.priority` | Có khi xác định ưu tiên | `VARCHAR(10)` | `CAO` / `TRUNG_BINH` / `THAP`, NULL trước bước này |
-| `device.serial_no` | Có nếu thiết bị mới | `VARCHAR(50)` | UNIQUE trong bảng `device` (QT-03) |
+| `customer.full_name` | Có | `VARCHAR(120)` | 2–120 ký tự |
+| `customer.address` | Không | `VARCHAR(255)` | Tối đa 255 ký tự |
+| `device.product_name` | Có | `VARCHAR(120)` | 2–120 ký tự |
+| `device.serial_no` | Có nếu thiết bị mới | `VARCHAR(50)` | 8–50 ký tự, chữ/số, UNIQUE (QT-03) |
+| `device.purchase_date` | Không | `DATE` | Không ở tương lai |
+| `device.warranty_months` | Không | `SMALLINT` | 1–120, mặc định 12 |
 
 ---
 
