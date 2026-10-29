@@ -28,16 +28,15 @@ npm run seed
 npm start
 ```
 
-Mở http://localhost:3000 → chuyển tới đăng nhập.
+Mở http://localhost:3001 → chuyển tới đăng nhập (port mặc định trong `.env.example`; có thể đổi `PORT` trong `.env`).
 
 Khi khởi động, console in `CSDL: Aiven MySQL ...` nếu đã kết nối cloud; nếu chưa có mật khẩu thì in `CSDL: SQLite ...`.
 
 Tài khoản mẫu:
 
 - Nhân viên tiếp nhận (US1–US5): `nv1` / `123456` — Nguyễn Thảo
-- Quản lý trung tâm (US6–US7): `ql1` / `123456` — Trần Minh Quản; `ql2` / `123456` — Lê Thị Mai
+- Quản lý trung tâm (US6–US7): `ql1` / `123456` — Trần Minh Quản
 
-Sau khi đổi seed, chạy lại `npm run seed` để đồng bộ tên và tài khoản `ql2`.
 
 Chạy `npm run seed` lần hai không nhân đôi dữ liệu (khóa UNIQUE + `INSERT IGNORE` / `INSERT OR IGNORE`).
 
@@ -52,13 +51,13 @@ Bốn nhóm: luồng đúng (tạo phiếu còn bảo hành), giá trị biên b
 ## 5. Cách kiểm tra hệ thống đã chạy đúng
 
 ```bash
-curl -s -X POST http://localhost:3000/api/login -H "Content-Type: application/json" -d "{\"username\":\"nv1\",\"password\":\"123456\"}"
+curl -s -X POST http://localhost:3001/api/login -H "Content-Type: application/json" -d "{\"username\":\"nv1\",\"password\":\"123456\"}"
 ```
 
 Lấy `token` rồi:
 
 ```bash
-curl -s http://localhost:3000/api/tickets -H "Authorization: Bearer TOKEN"
+curl -s http://localhost:3001/api/tickets -H "Authorization: Bearer TOKEN"
 ```
 
 Phải thấy phiếu mẫu `BH-000001/2026`. Thiếu `issue_desc` khi tạo phiếu phải ra HTTP 400, mã `DU_LIEU_KHONG_HOP_LE`.
