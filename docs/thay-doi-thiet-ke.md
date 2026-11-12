@@ -126,4 +126,4 @@
 - Thay đổi gì: Bổ sung `docs/test-report.md` (12 TC, kết quả thực tế), `docs/bug-log.md` (3 Major), `docs/deployment-guide.md`, `docs/checklist-bao-mat.md`, `docs/api-docs/API.md`; `Dockerfile` + `docker-compose.yml`; CI `npm test`; README mục Docker 2 lệnh.
 - Vì sao: Đề BT3 và workshop buổi 14 (kiểm thử hệ thống, minh chứng, đóng gói prototype).
 - Ảnh hưởng: `README.md`, `package.json` v1.0.0, không đổi nghiệp vụ API.
-- Phản hồi BT2 (9đ): Giữ nguyên code đạt; BT3 bổ sung tài liệu kiểm thử và cách chạy cho GV tái lập.
+- Phản hồi BT2 : Giữ nguyên code đạt; BT3 bổ sung tài liệu kiểm thử và cách chạy cho GV tái lập.
