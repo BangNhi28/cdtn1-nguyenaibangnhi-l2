@@ -114,3 +114,16 @@
 | `qua_han` API vs UI | Không xung đột: UI không gọi `qua_han`; tài liệu API vẫn mô tả query cũ. |
 | `dueSoon` (3 giờ) | Đã gỡ — tránh lệch với ngưỡng 24 giờ trên UI. |
 | Hai bản `public/tickets.html` trên git ( `\` vs `/` ) | Cùng file trên Windows; không phải hai implementation. |
+
+### TD-18 Phản hồi nhận xét BT2 + buổi 15 (09/11/2026)
+
+- Thay đổi gì: Mở rộng `tests/` lên **18** ca (QT-02, 03, 06, 13, 15, auth 401/403); `docs/phan-hoi-bt2.md`; checklist bảo mật 7 mục chuẩn buổi 15; CORS có whitelist (`CORS_ORIGINS`); `docs/git-commit-guide.md`.
+- Vì sao: GV nhận xét «test mỏng» và yêu cầu bảo mật/tài liệu BT3 buổi 15.
+- Ảnh hưởng: `package.json` script `npm test` chạy `tests/*.test.js`; không đổi nghiệp vụ UI.
+
+### TD-17 BT3 — Kiểm thử, bug log, đóng gói Docker (05/11/2026)
+
+- Thay đổi gì: Bổ sung `docs/test-report.md` (12 TC, kết quả thực tế), `docs/bug-log.md` (3 Major), `docs/deployment-guide.md`, `docs/checklist-bao-mat.md`, `docs/api-docs/API.md`; `Dockerfile` + `docker-compose.yml`; CI `npm test`; README mục Docker 2 lệnh.
+- Vì sao: Đề BT3 và workshop buổi 14 (kiểm thử hệ thống, minh chứng, đóng gói prototype).
+- Ảnh hưởng: `README.md`, `package.json` v1.0.0, không đổi nghiệp vụ API.
+- Phản hồi BT2 (9đ): Giữ nguyên code đạt; BT3 bổ sung tài liệu kiểm thử và cách chạy cho GV tái lập.

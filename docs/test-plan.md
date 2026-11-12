@@ -1,7 +1,7 @@
 # Test Plan (rút gọn) — Smart CRM L2
 
 **Sinh viên:** Nguyễn Ái Băng Nhi · MSSV 2374802010368 · Track SE  
-**Phiên bản:** 0.1 (buổi 14) · **Repo:** tag `v0.2` / nhánh `main`
+**Phiên bản:** 1.0 (BT3 — kiểm thử & đóng gói) · **Repo:** tag `v1.0` (sau nộp) / nhánh `main`
 
 ---
 
@@ -32,13 +32,13 @@
 | Tái lập | 2+ | `npm run seed` lần 2; `npm test` lần 2; migrate lần 2 |
 
 **Tổng Test Report:** 10–12 test case (chi tiết tại `docs/test-report.md`).  
-**Tự động hóa:** 5 test trong `tests/` — chạy bằng `npm test`.
+**Tự động hóa:** **18** test trong `tests/*.test.js` — chạy bằng `npm test` (bổ sung sau nhận xét BT2: QT-02/03/06/13/15, auth 401/403).
 
 ---
 
 ## 3. Tiêu chí thành công (đo được)
 
-- `npm test`: **5 pass**, **0 fail**, **4 suites**.
+- `npm test`: **18 pass**, **0 fail**, **11 suites** (cập nhật 09/11/2026).
 - API tạo phiếu hợp lệ: HTTP **201**, `status = MOI_TIEP_NHAN`, `ticket_code` khớp `BH-…/năm`.
 - Dữ liệu sai: HTTP **400**, mã `DU_LIEU_KHONG_HOP_LE`, `fields` nêu đúng trường.
 - Serial khách khác: HTTP **409**, không tạo phiếu mới.

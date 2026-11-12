@@ -11,7 +11,16 @@ Track: Công nghệ phần mềm (SE). Luồng: L2.
 - Kiểm thử luôn dùng SQLite `:memory:`, không đụng Aiven
 - Biến môi trường: xem `.env.example`
 
-## 3. Cài đặt và chạy
+## 3. Chạy nhanh bằng Docker (BT3 — tối đa 2 lệnh)
+
+```bash
+copy .env.example .env
+docker compose up -d --build
+```
+
+Mở http://localhost:3001. Chi tiết: `docs/deployment-guide.md` (English).
+
+## 4. Cài đặt và chạy (Node.js)
 
 Làm đúng các lệnh dưới đây từ thư mục gốc repo.
 
@@ -40,15 +49,20 @@ Tài khoản mẫu:
 
 Chạy `npm run seed` lần hai không nhân đôi dữ liệu (khóa UNIQUE + `INSERT IGNORE` / `INSERT OR IGNORE`).
 
-## 4. Kiểm thử
+## 5. Kiểm thử
 
 ```bash
 npm test
 ```
 
-Bốn nhóm: luồng đúng (tạo phiếu còn bảo hành), giá trị biên bảo hành, dữ liệu sai (thiếu `issue_desc` → 400), SLA ưu tiên cao (+24 giờ làm việc cùng giờ ngày hôm sau).
+**18** test tự động / **11** suite (`tests/*.test.js`), gồm: luồng đúng, biên bảo hành (QT-05), SLA (QT-04), dữ liệu sai, **QT-02** SĐT, **QT-03** serial 409, **QT-06** phân loại/ưu tiên + log, **QT-13** soft delete, **QT-15** che SĐT, **401/403** auth.
 
-## 5. Cách kiểm tra hệ thống đã chạy đúng
+```text
+npm test
+# tests 18 · pass 18 · suites 11
+```
+
+## 6. Cách kiểm tra hệ thống đã chạy đúng
 
 ```bash
 curl -s -X POST http://localhost:3001/api/login -H "Content-Type: application/json" -d "{\"username\":\"nv1\",\"password\":\"123456\"}"
@@ -62,7 +76,7 @@ curl -s http://localhost:3001/api/tickets -H "Authorization: Bearer TOKEN"
 
 Phải thấy phiếu mẫu `BH-000001/2026`. Thiếu `issue_desc` khi tạo phiếu phải ra HTTP 400, mã `DU_LIEU_KHONG_HOP_LE`.
 
-## 6. Giao diện và vai trò
+## 7. Giao diện và vai trò
 
 | Màn hình | Nhân viên | Quản lý |
 |----------|-----------|---------|
@@ -81,17 +95,19 @@ Phải thấy phiếu mẫu `BH-000001/2026`. Thiếu `issue_desc` khi tạo phi
 
 **Tạo phiếu:** bước 1 tra SĐT; bước 2 thiết bị & mô tả; lưu một lần → tạo phiếu, phân loại, gán ưu tiên (API). Trường **Nơi mua** lưu `device.note`; địa chỉ khách không bắt buộc (SRS).
 
-## 7. Trạng thái hiện tại (BT2)
+## 8. Trạng thái hiện tại (BT3)
 
 - [x] Migration 5 bảng ERD (+ `app_user`) trên Aiven MySQL (fallback SQLite)
 - [x] CRUD `customer` và `ticket` qua routes / services / repositories
 - [x] Quy tắc QT-02, QT-04 (giờ làm việc T2–T7), QT-05, QT-06, QT-13, QT-15
-- [x] Bốn file kiểm thử tự động PASS (`npm test`)
+- [x] Kiểm thử tự động mở rộng: **18** test PASS (`npm test`) — phản hồi nhận xét BT2
 - [x] Bốn màn hình chính + API client + đăng nhập; trạng thái tải / rỗng / lỗi có thử lại
 - [x] UI danh sách/chi tiết đồng bộ màu SLA và tab lọc (xem `docs/thay-doi-thiet-ke.md` TD-11…TD-16)
-- [ ] Tag `v0.2` khi nộp bài
+- [x] BT3: `docs/test-plan.md`, `docs/test-report.md`, `docs/bug-log.md`, `docs/deployment-guide.md`, `docs/checklist-bao-mat.md`, `docs/api-docs/API.md`
+- [x] Docker: `Dockerfile`, `docker-compose.yml` (2 lệnh như mục 3)
+- [ ] Tag `v1.0` + PDF BT3 khi nộp
 
-## 8. Lưu ý khi đối chiếu SRS
+## 9. Lưu ý khi đối chiếu SRS
 
 - **QT-04 (backend):** `due_date` = tiếp nhận + 24/72/120 **giờ làm việc** (bỏ Chủ nhật), lưu dạng `YYYY-MM-DD HH:mm:ss` giờ máy chủ (không UTC).
 - **Cảnh báo UI:** “Sắp đến hạn” trên web = còn **≤ 24 giờ** theo đồng hồ tới `due_date` (màu vàng), khác biệt có chủ ý với giờ làm việc khi tính hạn — mô tả TD-11.

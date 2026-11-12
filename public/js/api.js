@@ -1,5 +1,8 @@
 const Api = {
-  base: "/api",
+  base:
+    (typeof window !== "undefined" && window.SMARTCRM_API
+      ? String(window.SMARTCRM_API).replace(/\/+$/, "")
+      : "") + "/api",
   token() {
     return localStorage.getItem("token") || "";
   },

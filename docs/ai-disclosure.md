@@ -1,10 +1,10 @@
 # BẢNG KHAI BÁO SỬ DỤNG CÔNG CỤ AI
 
-Cập nhật cho Bài tập 2 — hiện thực module cốt lõi L2.
+Cập nhật cho **Bài tập 3** — kiểm thử, bug log, Docker và tài liệu triển khai (05/11/2026).
 
 | Công cụ | Dùng vào việc gì | Áp dụng ở tệp / hàm nào | Em đã kiểm chứng thế nào |
 |---|---|---|---|
-| Cursor | Gợi ý khung Express 3 lớp, SQLite schema, ba kiểm thử và ba màn hình. | `src/services/ticket.service.js`, `src/utils/warranty.js`, `src/utils/sla.js`, `tests/*`, `public/js/api.js` | Đọc từng hàm; đối chiếu QT-04, QT-05 với case study; chạy `npm test`; gọi tạo phiếu thiếu `issue_desc` phải ra 400. |
+| Cursor | BT2: khung Express, test, UI. **BT3:** soạn Test Report, Bug Log, Deployment Guide (EN), checklist bảo mật, API.md, Dockerfile/docker-compose, CI; chạy `npm test` và script kiểm tra API điền Kết quả thực tế. | `docs/test-report.md`, `docs/bug-log.md`, `docs/deployment-guide.md`, `Dockerfile`, `.github/workflows/ci.yml` | Em đối chiếu đề BT3/buổi 14; tự chạy lại `npm test` 2 lần; gọi API 401/409/mask phone; chụp ảnh minh chứng trước khi nộp PDF. |
 | Claude (Anthropic) | BT1: khung SRS, bảng truy vết, sơ đồ nháp. | `docs/srs.md` | Đối chiếu case study và phạm vi L2. |
 | ChatGPT (OpenAI) | BT1: rà soát SRS, ERD, API. | `docs/srs.md`, `docs/schema.sql` | Tự chỉnh tên cột `due_date`, `ticket_code`. |
 | Figma AI | BT1: gợi ý bố cục wireframe. | Mục 5 SRS | Tự chỉnh trường cho khớp ERD. |
@@ -13,4 +13,4 @@ Cập nhật cho Bài tập 2 — hiện thực module cốt lõi L2.
 Tôi xác nhận đã đọc, hiểu và chịu trách nhiệm về toàn bộ nội dung nộp.  
 Họ tên: Nguyễn Ái Băng Nhi  
 MSSV: 2374802010368  
-Ngày: 28/10/2026
+Ngày: 05/11/2026

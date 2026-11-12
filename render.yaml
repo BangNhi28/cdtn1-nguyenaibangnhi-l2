@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: smartcrm-l2
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm run migrate && npm run seed && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: ./data/smartcrm.sqlite

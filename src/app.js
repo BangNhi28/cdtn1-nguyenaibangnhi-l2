@@ -14,6 +14,7 @@ const { createAuthMiddleware, createRoleMiddleware } = require("./middleware/aut
 const { createAuthRoutes } = require("./routes/auth.routes");
 const { createCustomerRoutes } = require("./routes/customers.routes");
 const { createTicketRoutes, createCategoryRoutes } = require("./routes/tickets.routes");
+const { createCorsMiddleware } = require("./middleware/cors");
 
 function createApp(db, sessions) {
   const customerRepo = createCustomerRepository(db);
@@ -35,6 +36,10 @@ function createApp(db, sessions) {
   });
 
   const app = express();
+  if (process.env.TRUST_PROXY === "1") {
+    app.set("trust proxy", 1);
+  }
+  app.use(createCorsMiddleware());
   app.use(express.json());
   app.set("json replacer", (_key, value) => {
     if (typeof value === "bigint") {

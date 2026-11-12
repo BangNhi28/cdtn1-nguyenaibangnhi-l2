@@ -1,6 +1,6 @@
 {
   "name": "cdtn1-nguyenaibangnhi-l2",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Smart CRM Mekong Mobile — L2 tiếp nhận và phân loại phiếu bảo hành",
   "main": "src/server.js",
@@ -8,7 +8,7 @@
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
     "start": "node src/server.js",
-    "test": "node --test tests/ticket-happy.test.js tests/ticket-boundary.test.js tests/ticket-invalid.test.js tests/sla.test.js"
+    "test": "node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=22"
