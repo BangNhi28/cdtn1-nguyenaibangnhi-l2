@@ -60,4 +60,4 @@
 | Dữ liệu mẫu | Phiếu `BH-000001/2026` sau seed |
 | Kỹ thuật chọn dữ liệu | Phân vùng hợp lệ / không hợp lệ; biên bảo hành (ngày cuối còn BH vs ngày sau hết hạn); serial mới vs serial đã tồn tại |
 
-**Reset khi test tay:** có thể xóa DB SQLite local hoặc chạy lại migrate+seed; test tự động tự tạo DB mới mỗi lần.
+**Reset khi test tay:** có thể xóa DB SQLite local hoặc chạy lại migrate+seed; test tự động tự tạo DB mới mỗi lần..
