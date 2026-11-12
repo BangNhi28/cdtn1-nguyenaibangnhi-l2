@@ -118,4 +118,3 @@ git push origin v1.0
 | `docs/bug-log.md` | Defects and fix commits |
 | `docs/checklist-bao-mat.md` | Security self-check |
 | `docs/api-docs/API.md` | REST reference (English) |
-.
