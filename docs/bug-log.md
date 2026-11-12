@@ -46,5 +46,4 @@ Mỗi bug **7 dòng**. Mỗi bug **một commit** riêng; link commit phải m�
 
 ---
 
-
 **Yêu cầu BT3 / buổi 14:** ≥ 3 bug, ≥ 1 Critical hoặc Major — đủ 3 **Major** như trên.
