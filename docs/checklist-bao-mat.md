@@ -33,4 +33,4 @@ npm test
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/api/tickets
 ```
 
-Kết quả mong đợi: **18 tests pass**; curl in **401**.
+Kết quả mong đợi: **18 tests pass**; curl in **401**
