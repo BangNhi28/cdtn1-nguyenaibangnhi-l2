@@ -23,6 +23,6 @@
 
 **Đủ năm loại:** luồng đúng (TC-01,02) · biên (TC-03–05) · dữ liệu sai (TC-06,07) · bảo mật/chất lượng (TC-08–10) · tái lập (TC-11,12).
 
-**Ảnh tổng hợp npm test:** `docs/screenshots/npm-test.png`
+**Ảnh tổng hợp npm test:** `docs/screenshots/npm-test.png` .
 
-**Ghi chú:** Ảnh PNG em chụp terminal/Postman/UI và đặt vào `docs/screenshots/` trước khi nộp PDF BT3 (hiện chỉ có `README.md` hướng dẫn tên file).
+**Ghi chú:** Ảnh PNG em chụp terminal/Postman/UI và đặt vào `docs/screenshots/` trước khi nộp PDF BT3 (hiện chỉ có `README.md` hướng dẫn tên file)
