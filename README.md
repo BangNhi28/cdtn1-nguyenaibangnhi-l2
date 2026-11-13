@@ -2,7 +2,7 @@
 
 Prototype **tiếp nhận và phân loại phiếu bảo hành** cho chuỗi Mekong Mobile. Nhân viên tra cứu khách theo số điện thoại, tạo phiếu (wizard 2 bước), phân loại nhóm sự cố và xác định mức ưu tiên ngay khi lưu. Quản lý xem danh sách phiếu, lọc theo hạn cam kết, chi tiết phiếu và lịch sử trạng thái.
 
-Track: Công nghệ phần mềm (SE). Luồng: L2.
+Track: Công nghệ phần mềm (SE). Luồng: L2
 
 ## 2. Yêu cầu môi trường
 
