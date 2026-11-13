@@ -1,5 +1,12 @@
-node_modules
-data/*.sqlite
 .env
-.git
-docs
+node_modules/
+.venv/
+__pycache__/
+dist/
+*.log
+.DS_Store
+data/*.sqlite
+data/*.sqlite-*
+_design-ref/
+docs/*.docx
+BT2_*.docx
