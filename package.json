@@ -1,3 +1,4 @@
+
 {
   "name": "cdtn1-nguyenaibangnhi-l2",
   "version": "1.0.0",
@@ -19,6 +20,6 @@
     "mysql2": "^3.24.6"
   },
   "devDependencies": {
-    "supertest": "^7.1.0"
+    "supertest": "^7.1.0" 
   }
 }
